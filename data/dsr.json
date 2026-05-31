@@ -1,0 +1,1159 @@
+{
+  "ESKD_DETAIL": {
+    "code": "ESKD_DETAIL",
+    "std": "ЕСКД",
+    "short_code": "ЧД",
+    "name": "Чертёж детали",
+    "gost": "ГОСТ 2.102–2013",
+    "fields": [
+      {
+        "id": "designation",
+        "name": "Обозначение (основная надпись)",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "name_field",
+        "name": "Наименование детали",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "material",
+        "name": "Материал",
+        "type": "string",
+        "required": true,
+        "links": [
+          "ESTD_MK.material",
+          "ESTD_TI.coating_procedure",
+          "ESKD_PASSPORT.tech_chars"
+        ]
+      },
+      {
+        "id": "mass",
+        "name": "Масса (кг)",
+        "type": "number",
+        "unit": "кг",
+        "links": [
+          "ESTD_MK.blank_mass",
+          "ESKD_PASSPORT.tech_chars"
+        ]
+      },
+      {
+        "id": "scale",
+        "name": "Масштаб",
+        "type": "string"
+      },
+      {
+        "id": "tolerance",
+        "name": "Допуски формы и расположения",
+        "type": "string",
+        "links": [
+          "ESTD_OK.cutting_modes",
+          "ESTD_OK.tool",
+          "ESTD_KTK.control_methods"
+        ]
+      },
+      {
+        "id": "roughness",
+        "name": "Шероховатость",
+        "type": "string",
+        "links": [
+          "ESTD_OK.finishing_method",
+          "ESTD_KTK.control_methods"
+        ]
+      },
+      {
+        "id": "coating",
+        "name": "Покрытие",
+        "type": "string",
+        "links": [
+          "ESTD_TI.coating_procedure"
+        ]
+      },
+      {
+        "id": "heat_treatment",
+        "name": "Термообработка",
+        "type": "string",
+        "links": [
+          "ESTD_MK.operations",
+          "ESTD_OK.heat_modes"
+        ]
+      },
+      {
+        "id": "tech_requirements",
+        "name": "Технические требования",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₄",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_ASSEMBLY": {
+    "code": "ESKD_ASSEMBLY",
+    "std": "ЕСКД",
+    "short_code": "СБ",
+    "name": "Сборочный чертёж",
+    "gost": "ГОСТ 2.102–2013",
+    "fields": [
+      {
+        "id": "designation",
+        "name": "Обозначение",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "composition",
+        "name": "Состав СЕ (позиции)",
+        "type": "list",
+        "required": true,
+        "links": [
+          "ESTD_MK.operations",
+          "ESTD_KK.assembly_composition",
+          "ESKD_PASSPORT.delivery_set"
+        ]
+      },
+      {
+        "id": "assembly_dims",
+        "name": "Размеры для сборки",
+        "type": "string",
+        "links": [
+          "ESKD_RE.installation"
+        ]
+      },
+      {
+        "id": "mounting_schema",
+        "name": "Схема монтажа",
+        "type": "string",
+        "links": [
+          "ESKD_RE.installation",
+          "ESTD_TI.installation_order"
+        ]
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₄",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_SPEC": {
+    "code": "ESKD_SPEC",
+    "std": "ЕСКД",
+    "short_code": "СП",
+    "name": "Спецификация",
+    "gost": "ГОСТ 2.102–2013",
+    "fields": [
+      {
+        "id": "designation",
+        "name": "Обозначение",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "composition",
+        "name": "Состав изделия (позиции)",
+        "type": "list",
+        "required": true,
+        "links": [
+          "ESTD_KK.assembly_composition",
+          "ESTD_MK.operations",
+          "ESKD_PASSPORT.delivery_set"
+        ]
+      },
+      {
+        "id": "bought_parts",
+        "name": "Покупные изделия",
+        "type": "list",
+        "links": [
+          "ESTD_MK.operations"
+        ]
+      },
+      {
+        "id": "quantity",
+        "name": "Количество",
+        "type": "number"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_VO": {
+    "code": "ESKD_VO",
+    "std": "ЕСКД",
+    "short_code": "ВО",
+    "name": "Чертёж общего вида",
+    "gost": "ГОСТ 2.102–2013",
+    "fields": [
+      {
+        "id": "designation",
+        "name": "Обозначение",
+        "type": "string"
+      },
+      {
+        "id": "layout",
+        "name": "Компоновка составных частей",
+        "type": "text"
+      },
+      {
+        "id": "principle",
+        "name": "Принцип работы",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "ТП",
+      "РД"
+    ],
+    "omega_sensitivity": [
+      "Ω₃",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_TU": {
+    "code": "ESKD_TU",
+    "std": "ЕСКД",
+    "short_code": "ТУ",
+    "name": "Технические условия",
+    "gost": "ГОСТ 2.114–2016",
+    "fields": [
+      {
+        "id": "tech_req",
+        "name": "Технические требования",
+        "type": "text",
+        "required": true,
+        "links": [
+          "ESTD_KTK.control_methods",
+          "ESPD_PMI.test_methods"
+        ]
+      },
+      {
+        "id": "acceptance",
+        "name": "Правила приёмки",
+        "type": "text",
+        "links": [
+          "ESPD_PMI.test_methods"
+        ]
+      },
+      {
+        "id": "control_methods",
+        "name": "Методы контроля",
+        "type": "text",
+        "links": [
+          "ESTD_KTK.control_methods"
+        ]
+      },
+      {
+        "id": "guarantee",
+        "name": "Гарантийный срок",
+        "type": "string",
+        "links": [
+          "ESKD_PASSPORT.guarantee"
+        ]
+      },
+      {
+        "id": "conditions",
+        "name": "Условия эксплуатации",
+        "type": "string",
+        "links": [
+          "ESKD_RE.conditions",
+          "ESKD_PASSPORT.tech_chars"
+        ]
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₄",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_PASSPORT": {
+    "code": "ESKD_PASSPORT",
+    "std": "ЕСКД",
+    "short_code": "ПС",
+    "name": "Паспорт",
+    "gost": "ГОСТ 2.102–2013",
+    "fields": [
+      {
+        "id": "tech_chars",
+        "name": "Технические характеристики",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "delivery_set",
+        "name": "Комплект поставки",
+        "type": "list"
+      },
+      {
+        "id": "guarantee",
+        "name": "Гарантийные обязательства",
+        "type": "string"
+      },
+      {
+        "id": "acceptance_cert",
+        "name": "Свидетельство о приёмке",
+        "type": "string"
+      }
+    ],
+    "lifecycle": [
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₄",
+      "Ω₆"
+    ]
+  },
+  "ESKD_RE": {
+    "code": "ESKD_RE",
+    "std": "ЕСКД",
+    "short_code": "РЭ",
+    "name": "Руководство по эксплуатации",
+    "gost": "ГОСТ 2.601–2013",
+    "fields": [
+      {
+        "id": "conditions",
+        "name": "Условия и место эксплуатации",
+        "type": "text"
+      },
+      {
+        "id": "installation",
+        "name": "Установка и монтаж",
+        "type": "text"
+      },
+      {
+        "id": "operation",
+        "name": "Порядок работы",
+        "type": "text"
+      },
+      {
+        "id": "maintenance",
+        "name": "Техническое обслуживание",
+        "type": "text"
+      },
+      {
+        "id": "repair",
+        "name": "Ремонт",
+        "type": "text"
+      },
+      {
+        "id": "zip",
+        "name": "Запасные части (ЗИП)",
+        "type": "list"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_FORMULAR": {
+    "code": "ESKD_FORMULAR",
+    "std": "ЕСКД",
+    "short_code": "ФО",
+    "name": "Формуляр",
+    "gost": "ГОСТ 2.602–2013",
+    "fields": [
+      {
+        "id": "tech_data",
+        "name": "Технические данные",
+        "type": "text"
+      },
+      {
+        "id": "manufacture_info",
+        "name": "Сведения об изготовлении",
+        "type": "text"
+      },
+      {
+        "id": "service_log",
+        "name": "Учёт ТО и хранения",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₁",
+      "Ω₂"
+    ]
+  },
+  "ESKD_VP": {
+    "code": "ESKD_VP",
+    "std": "ЕСКД",
+    "short_code": "ВП",
+    "name": "Ведомость покупных изделий",
+    "gost": "ГОСТ 2.106–96",
+    "fields": [
+      {
+        "id": "purchased_items",
+        "name": "Покупные изделия",
+        "type": "list",
+        "required": true,
+        "links": [
+          "ESTD_KK.assembly_composition"
+        ]
+      },
+      {
+        "id": "supplier",
+        "name": "Поставщик",
+        "type": "string",
+        "required": false,
+        "links": []
+      },
+      {
+        "id": "count",
+        "name": "Количество",
+        "type": "number",
+        "required": true,
+        "links": []
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESKD_ZIP": {
+    "code": "ESKD_ZIP",
+    "std": "ЕСКД",
+    "short_code": "ЗИ",
+    "name": "Ведомость ЗИП",
+    "gost": "ГОСТ 2.102–2013",
+    "fields": [
+      {
+        "id": "zip_items",
+        "name": "Перечень ЗИП",
+        "type": "list",
+        "links": [
+          "ESKD_RE.zip"
+        ]
+      },
+      {
+        "id": "quantity_kit",
+        "name": "Количество на комплект",
+        "type": "number"
+      }
+    ],
+    "lifecycle": [
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃"
+    ]
+  },
+  "ESTD_MK": {
+    "code": "ESTD_MK",
+    "std": "ЕСТД",
+    "short_code": "МК",
+    "name": "Маршрутная карта",
+    "gost": "ГОСТ 3.1118–82",
+    "fields": [
+      {
+        "id": "product_name",
+        "name": "Наименование изделия",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "kd_designation",
+        "name": "Обозначение КД",
+        "type": "string"
+      },
+      {
+        "id": "material",
+        "name": "Материал (строка М)",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "blank_mass",
+        "name": "Масса заготовки (кг)",
+        "type": "number",
+        "unit": "кг"
+      },
+      {
+        "id": "material_rate",
+        "name": "Норма расхода материала",
+        "type": "number"
+      },
+      {
+        "id": "operations",
+        "name": "Операции (маршрут)",
+        "type": "list",
+        "required": true,
+        "links": [
+          "ESPD_PMI.test_conditions"
+        ]
+      },
+      {
+        "id": "equipment",
+        "name": "Оборудование",
+        "type": "string"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₄",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESTD_OK": {
+    "code": "ESTD_OK",
+    "std": "ЕСТД",
+    "short_code": "ОК",
+    "name": "Операционная карта",
+    "gost": "ГОСТ 3.1404–86",
+    "fields": [
+      {
+        "id": "op_code",
+        "name": "Код операции",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "op_name",
+        "name": "Наименование операции",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "equipment",
+        "name": "Оборудование",
+        "type": "string"
+      },
+      {
+        "id": "cutting_modes",
+        "name": "Режимы резания",
+        "type": "string"
+      },
+      {
+        "id": "tool",
+        "name": "Инструмент",
+        "type": "string"
+      },
+      {
+        "id": "fixture",
+        "name": "Приспособление",
+        "type": "string"
+      },
+      {
+        "id": "finishing_method",
+        "name": "Метод финишной обработки",
+        "type": "string"
+      },
+      {
+        "id": "heat_modes",
+        "name": "Режимы термообработки",
+        "type": "string"
+      },
+      {
+        "id": "norm_time",
+        "name": "Норма времени (мин)",
+        "type": "number",
+        "unit": "мин"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₄",
+      "Ω₅"
+    ]
+  },
+  "ESTD_KTK": {
+    "code": "ESTD_KTK",
+    "std": "ЕСТД",
+    "short_code": "КТК",
+    "name": "Карта технического контроля",
+    "gost": "ГОСТ 3.1502–85",
+    "fields": [
+      {
+        "id": "control_ops",
+        "name": "Операции контроля",
+        "type": "list",
+        "required": true
+      },
+      {
+        "id": "control_methods",
+        "name": "Методы и средства контроля",
+        "type": "text"
+      },
+      {
+        "id": "control_tools",
+        "name": "Средства измерений",
+        "type": "string"
+      },
+      {
+        "id": "frequency",
+        "name": "Периодичность контроля",
+        "type": "string"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₄",
+      "Ω₅"
+    ]
+  },
+  "ESTD_KK": {
+    "code": "ESTD_KK",
+    "std": "ЕСТД",
+    "short_code": "КК",
+    "name": "Комплектовочная карта",
+    "gost": "ГОСТ 3.1122–84",
+    "fields": [
+      {
+        "id": "assembly_composition",
+        "name": "Состав позиций на операции",
+        "type": "list",
+        "required": true
+      },
+      {
+        "id": "op_number",
+        "name": "Номер сборочной операции",
+        "type": "string"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₃",
+      "Ω₅"
+    ]
+  },
+  "ESTD_TI": {
+    "code": "ESTD_TI",
+    "std": "ЕСТД",
+    "short_code": "ТИ",
+    "name": "Технологическая инструкция",
+    "gost": "ГОСТ 3.1130–93",
+    "fields": [
+      {
+        "id": "coating_procedure",
+        "name": "Порядок нанесения покрытия",
+        "type": "text"
+      },
+      {
+        "id": "installation_order",
+        "name": "Порядок монтажа",
+        "type": "text",
+        "links": [
+          "ESKD_RE.installation"
+        ]
+      },
+      {
+        "id": "tolerances",
+        "name": "Допуски при монтаже",
+        "type": "string"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₅"
+    ]
+  },
+  "ESTD_KTP": {
+    "code": "ESTD_KTP",
+    "std": "ЕСТД",
+    "short_code": "КТП",
+    "name": "Карта технологического процесса",
+    "gost": "ГОСТ 3.1404–86",
+    "fields": [
+      {
+        "id": "all_operations",
+        "name": "Все операции с переходами",
+        "type": "list",
+        "required": true
+      },
+      {
+        "id": "equipment_list",
+        "name": "Перечень оборудования",
+        "type": "list"
+      },
+      {
+        "id": "total_norm_time",
+        "name": "Суммарная трудоёмкость",
+        "type": "number",
+        "unit": "н-ч"
+      }
+    ],
+    "lifecycle": [
+      "ТП",
+      "РД"
+    ],
+    "omega_sensitivity": [
+      "Ω₃",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESTD_VTP": {
+    "code": "ESTD_VTP",
+    "std": "ЕСТД",
+    "short_code": "ВТП",
+    "name": "Ведомость технологических процессов",
+    "gost": "ГОСТ 3.1119–83",
+    "fields": [
+      {
+        "id": "process_list",
+        "name": "Состав операций ТП",
+        "type": "list",
+        "required": true
+      }
+    ],
+    "lifecycle": [
+      "ТП",
+      "РД"
+    ],
+    "omega_sensitivity": [
+      "Ω₃",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESPD_TZ": {
+    "code": "ESPD_TZ",
+    "std": "ЕСПД",
+    "short_code": "ТЗ",
+    "name": "Техническое задание",
+    "gost": "ГОСТ 19.201–78",
+    "fields": [
+      {
+        "id": "purpose",
+        "name": "Назначение и область применения",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "func_requirements",
+        "name": "Функциональные требования",
+        "type": "text",
+        "required": true,
+        "links": [
+          "ESPD_OP.functions",
+          "ESPD_RO.description",
+          "ESPD_PMI.test_methods"
+        ]
+      },
+      {
+        "id": "reliability_req",
+        "name": "Требования к надёжности",
+        "type": "text",
+        "links": [
+          "ESPD_PMI.test_methods"
+        ]
+      },
+      {
+        "id": "hw_req",
+        "name": "Требования к техническим средствам",
+        "type": "text"
+      },
+      {
+        "id": "sw_req",
+        "name": "Требования к программному обеспечению",
+        "type": "text"
+      },
+      {
+        "id": "doc_req",
+        "name": "Требования к документации",
+        "type": "list"
+      },
+      {
+        "id": "stages",
+        "name": "Стадии и этапы разработки",
+        "type": "list"
+      }
+    ],
+    "lifecycle": [
+      "ТП"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₄",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESPD_SPEC": {
+    "code": "ESPD_SPEC",
+    "std": "ЕСПД",
+    "short_code": "СППО",
+    "name": "Спецификация ПО",
+    "gost": "ГОСТ 19.202–78",
+    "fields": [
+      {
+        "id": "components",
+        "name": "Перечень компонентов программного изделия",
+        "type": "list",
+        "required": true
+      }
+    ],
+    "lifecycle": [
+      "РД"
+    ],
+    "omega_sensitivity": [
+      "Ω₃",
+      "Ω₅",
+      "Ω₆"
+    ]
+  },
+  "ESPD_OP": {
+    "code": "ESPD_OP",
+    "std": "ЕСПД",
+    "short_code": "ОП",
+    "name": "Описание программы",
+    "gost": "ГОСТ 19.402–78",
+    "fields": [
+      {
+        "id": "general_info",
+        "name": "Общие сведения",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "functions",
+        "name": "Функциональное назначение",
+        "type": "text",
+        "required": true,
+        "links": [
+          "ESPD_RO.description"
+        ]
+      },
+      {
+        "id": "structure",
+        "name": "Описание логической структуры",
+        "type": "text"
+      },
+      {
+        "id": "environment",
+        "name": "Среда и условия применения",
+        "type": "string"
+      },
+      {
+        "id": "input_output",
+        "name": "Входные/выходные данные",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  },
+  "ESPD_RO": {
+    "code": "ESPD_RO",
+    "std": "ЕСПД",
+    "short_code": "РО",
+    "name": "Руководство оператора",
+    "gost": "ГОСТ 19.505–79",
+    "fields": [
+      {
+        "id": "description",
+        "name": "Описание функций для пользователя",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "conditions",
+        "name": "Условия выполнения программы",
+        "type": "text"
+      },
+      {
+        "id": "execution_order",
+        "name": "Выполнение программы",
+        "type": "text"
+      },
+      {
+        "id": "diagnostics",
+        "name": "Диагностические сообщения",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₅",
+      "Ω₆"
+    ]
+  },
+  "ESPD_PMI": {
+    "code": "ESPD_PMI",
+    "std": "ЕСПД",
+    "short_code": "ПМИ",
+    "name": "Программа и методика испытаний",
+    "gost": "ГОСТ 19.301–79",
+    "fields": [
+      {
+        "id": "test_object",
+        "name": "Объект испытаний",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "test_purpose",
+        "name": "Цель испытаний",
+        "type": "text"
+      },
+      {
+        "id": "test_methods",
+        "name": "Методы испытаний",
+        "type": "text",
+        "required": true
+      },
+      {
+        "id": "test_conditions",
+        "name": "Условия испытаний",
+        "type": "text"
+      },
+      {
+        "id": "test_data",
+        "name": "Тестовые данные",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₄",
+      "Ω₅",
+      "Ω₆"
+    ]
+  },
+  "ESPD_FORMULAR": {
+    "code": "ESPD_FORMULAR",
+    "std": "ЕСПД",
+    "short_code": "ФПО",
+    "name": "Формуляр ПО",
+    "gost": "ГОСТ 19.501–78",
+    "fields": [
+      {
+        "id": "purpose",
+        "name": "Назначение",
+        "type": "text"
+      },
+      {
+        "id": "resources",
+        "name": "Ресурсы",
+        "type": "text"
+      },
+      {
+        "id": "service_history",
+        "name": "История эксплуатации",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "ИЗГОТ",
+      "ЭКСПЛ"
+    ],
+    "omega_sensitivity": [
+      "Ω₁",
+      "Ω₂"
+    ]
+  },
+  "ESPD_RP": {
+    "code": "ESPD_RP",
+    "std": "ЕСПД",
+    "short_code": "РП",
+    "name": "Руководство программиста",
+    "gost": "ГОСТ 19.504–79",
+    "fields": [
+      {
+        "id": "data_structures",
+        "name": "Структура данных",
+        "type": "text"
+      },
+      {
+        "id": "modification",
+        "name": "Правила модификации",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "РД"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₅",
+      "Ω₇"
+    ]
+  },
+  "ESPD_RSP": {
+    "code": "ESPD_RSP",
+    "std": "ЕСПД",
+    "short_code": "РСП",
+    "name": "Руководство системного программиста",
+    "gost": "ГОСТ 19.503–79",
+    "fields": [
+      {
+        "id": "config",
+        "name": "Конфигурация",
+        "type": "text"
+      },
+      {
+        "id": "installation",
+        "name": "Установка и проверка",
+        "type": "text"
+      },
+      {
+        "id": "environment_setup",
+        "name": "Настройка среды",
+        "type": "text"
+      }
+    ],
+    "lifecycle": [
+      "РД",
+      "ИЗГОТ"
+    ],
+    "omega_sensitivity": [
+      "Ω₂",
+      "Ω₃",
+      "Ω₅"
+    ]
+  },
+  "ESKD_SCHEME_E3": {
+    "code": "ESKD_SCHEME_E3",
+    "std": "ЕСКД",
+    "short_code": "Э3",
+    "name": "Схема электрическая принципиальная",
+    "gost": "ГОСТ 2.702–2011",
+    "fields": [
+      {
+        "id": "element_list",
+        "name": "Перечень элементов",
+        "type": "list",
+        "required": true,
+        "links": [
+          "ESTD_KK.assembly_composition"
+        ]
+      },
+      {
+        "id": "connections",
+        "name": "Связи и цепи",
+        "type": "text",
+        "required": true,
+        "links": []
+      },
+      {
+        "id": "functional_desc",
+        "name": "Функциональное описание",
+        "type": "text",
+        "required": false,
+        "links": [
+          "ESKD_RE.conditions"
+        ]
+      },
+      {
+        "id": "principle",
+        "name": "Принцип работы",
+        "type": "text",
+        "required": false,
+        "links": [
+          "ESKD_RE.installation"
+        ]
+      }
+    ],
+    "lifecycle": [
+      "ТП",
+      "РД"
+    ],
+    "omega_sensitivity": [
+      "Ω₃",
+      "Ω₅",
+      "Ω₆",
+      "Ω₇"
+    ]
+  }
+}

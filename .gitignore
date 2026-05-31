@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Database (содержит данные — не коммитим)
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+
+# Секреты — API-ключи хранить через env-переменные, не в коде
+.env
+.env.local
+.env.*.local
+
+# Загруженные файлы и генерируемые DOCX
+doc_files/
+*.docx
+*.pdf
+
+# Логи
+*.log
+logs/
+
+# Временные файлы
+*.tmp
+*.bak
+
+# Claude Code
+.claude/

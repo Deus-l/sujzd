@@ -1,0 +1,660 @@
+[
+  {
+    "id": "R_001",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "material",
+    "target_type": "ESTD_MK",
+    "target_field": "material",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₃"
+    ],
+    "description": "Материал детали → строка М маршрутной карты",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_002",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "material",
+    "target_type": "ESTD_MK",
+    "target_field": "material_rate",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Материал → норма расхода в МК",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_003",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "material",
+    "target_type": "ESTD_TI",
+    "target_field": "coating_procedure",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Материал → технология нанесения покрытия в ТИ",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.2"
+  },
+  {
+    "id": "R_004",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "material",
+    "target_type": "ESKD_PASSPORT",
+    "target_field": "tech_chars",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Материал → технические характеристики паспорта",
+    "norm_ref": "ГОСТ 2.610-2006 п. 3.1"
+  },
+  {
+    "id": "R_005",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "mass",
+    "target_type": "ESTD_MK",
+    "target_field": "blank_mass",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Масса детали → масса заготовки в МК",
+    "norm_ref": "ГОСТ 3.1118-82 п. 2.4"
+  },
+  {
+    "id": "R_006",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "tolerance",
+    "target_type": "ESTD_OK",
+    "target_field": "cutting_modes",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Допуски → режимы резания в операционной карте",
+    "norm_ref": "ГОСТ 3.1404-86 п. 3.2"
+  },
+  {
+    "id": "R_007",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "tolerance",
+    "target_type": "ESTD_OK",
+    "target_field": "tool",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Допуски → инструмент в операционной карте",
+    "norm_ref": "ГОСТ 3.1404-86 п. 3.2"
+  },
+  {
+    "id": "R_008",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "tolerance",
+    "target_type": "ESTD_KTK",
+    "target_field": "control_methods",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Допуски → методы контроля в КТК",
+    "norm_ref": "ГОСТ 3.1502-85 п. 2.1"
+  },
+  {
+    "id": "R_009",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "roughness",
+    "target_type": "ESTD_OK",
+    "target_field": "finishing_method",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Шероховатость → метод финишной обработки в ОК",
+    "norm_ref": "ГОСТ 3.1404-86 п. 3.3"
+  },
+  {
+    "id": "R_010",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "roughness",
+    "target_type": "ESTD_KTK",
+    "target_field": "control_methods",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Шероховатость → методы контроля в КТК",
+    "norm_ref": "ГОСТ 3.1502-85 п. 2.1"
+  },
+  {
+    "id": "R_011",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "coating",
+    "target_type": "ESTD_TI",
+    "target_field": "coating_procedure",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Покрытие детали → раздел нанесения покрытия в ТИ",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.2"
+  },
+  {
+    "id": "R_012",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "heat_treatment",
+    "target_type": "ESTD_MK",
+    "target_field": "operations",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Термообработка → операции ТО в маршрутной карте",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_013",
+    "source_type": "ESKD_DETAIL",
+    "source_field": "heat_treatment",
+    "target_type": "ESTD_OK",
+    "target_field": "heat_modes",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Термообработка → режимы в операционной карте ТО",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_014",
+    "source_type": "ESKD_ASSEMBLY",
+    "source_field": "composition",
+    "target_type": "ESTD_KK",
+    "target_field": "assembly_composition",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Состав СЕ → состав позиций на сборочной операции в КК",
+    "norm_ref": "ГОСТ 3.1407-86 п. 2.1"
+  },
+  {
+    "id": "R_015",
+    "source_type": "ESKD_ASSEMBLY",
+    "source_field": "composition",
+    "target_type": "ESTD_MK",
+    "target_field": "operations",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Состав СЕ → операции сборки в маршрутной карте",
+    "norm_ref": "ГОСТ 3.1407-86 п. 2.1"
+  },
+  {
+    "id": "R_016",
+    "source_type": "ESKD_ASSEMBLY",
+    "source_field": "mounting_schema",
+    "target_type": "ESTD_TI",
+    "target_field": "installation_order",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂",
+      "Ω₃"
+    ],
+    "description": "Схема монтажа → порядок монтажа в ТИ",
+    "norm_ref": "ГОСТ 3.1407-86 п. 2.3"
+  },
+  {
+    "id": "R_017",
+    "source_type": "ESKD_SPEC",
+    "source_field": "composition",
+    "target_type": "ESTD_KK",
+    "target_field": "assembly_composition",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Состав изделия → комплектовочная карта",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_018",
+    "source_type": "ESKD_SPEC",
+    "source_field": "composition",
+    "target_type": "ESTD_MK",
+    "target_field": "operations",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Состав изделия → операции сборки в МК",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_019",
+    "source_type": "ESKD_SPEC",
+    "source_field": "bought_parts",
+    "target_type": "ESTD_MK",
+    "target_field": "operations",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Замена покупного изделия → операции монтажа/подгонки в МК",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "id": "R_020",
+    "source_type": "ESKD_TU",
+    "source_field": "tech_req",
+    "target_type": "ESTD_KTK",
+    "target_field": "control_methods",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Технические требования ТУ → методы контроля в КТК",
+    "norm_ref": "ГОСТ 3.1502-85 п. 2.2"
+  },
+  {
+    "id": "R_021",
+    "source_type": "ESKD_TU",
+    "source_field": "tech_req",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_methods",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₄"
+    ],
+    "description": "Технические требования ТУ → методы испытаний в ПМИ",
+    "norm_ref": "ГОСТ 19.301-79 п. 2.2"
+  },
+  {
+    "id": "R_022",
+    "source_type": "ESKD_TU",
+    "source_field": "acceptance",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_methods",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Правила приёмки ТУ → методы испытаний в ПМИ",
+    "norm_ref": "ГОСТ 19.301-79 п. 2.2"
+  },
+  {
+    "id": "R_023",
+    "source_type": "ESKD_TU",
+    "source_field": "guarantee",
+    "target_type": "ESKD_PASSPORT",
+    "target_field": "guarantee",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₄"
+    ],
+    "description": "Гарантийный срок ТУ → гарантийные обязательства в паспорте",
+    "norm_ref": "ГОСТ 2.610-2006 п. 4.1"
+  },
+  {
+    "id": "R_024",
+    "source_type": "ESKD_TU",
+    "source_field": "conditions",
+    "target_type": "ESKD_RE",
+    "target_field": "conditions",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Условия эксплуатации ТУ → условия эксплуатации в РЭ",
+    "norm_ref": "ГОСТ 2.601-2019 п. 3.4"
+  },
+  {
+    "id": "R_025",
+    "source_type": "ESKD_TU",
+    "source_field": "control_methods",
+    "target_type": "ESTD_KTK",
+    "target_field": "control_methods",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Методы контроля ТУ → методы контроля в КТК",
+    "norm_ref": "ГОСТ 3.1502-85 п. 2.2"
+  },
+  {
+    "id": "R_026",
+    "source_type": "ESKD_SCHEME_E3",
+    "source_field": "elements",
+    "target_type": "ESTD_KK",
+    "target_field": "assembly_composition",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Состав элементов схемы → состав на операции монтажа в КК",
+    "norm_ref": "ГОСТ 2.701-2008 п. 5.2"
+  },
+  {
+    "id": "R_027",
+    "source_type": "ESTD_MK",
+    "source_field": "operations",
+    "target_type": "ESTD_OK",
+    "target_field": "op_code",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃",
+      "Ω₅"
+    ],
+    "description": "Маршрут МК → набор операционных карт",
+    "norm_ref": "ГОСТ 3.1118-82 п. 2.1"
+  },
+  {
+    "id": "R_028",
+    "source_type": "ESTD_MK",
+    "source_field": "operations",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_conditions",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₅",
+      "Ω₃"
+    ],
+    "description": "Маршрут МК → условия испытаний в ПМИ",
+    "norm_ref": "ГОСТ 19.301-79 п. 2.1"
+  },
+  {
+    "id": "R_029",
+    "source_type": "ESTD_KTK",
+    "source_field": "control_methods",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_methods",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₅"
+    ],
+    "description": "Методы контроля КТК → методы испытаний в ПМИ",
+    "norm_ref": "ГОСТ 19.301-79 п. 2.3"
+  },
+  {
+    "id": "R_030",
+    "source_type": "ESPD_TZ",
+    "source_field": "func_requirements",
+    "target_type": "ESPD_OP",
+    "target_field": "functions",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₃"
+    ],
+    "description": "Функц. требования ТЗ → функциональное назначение в ОП",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.4"
+  },
+  {
+    "id": "R_031",
+    "source_type": "ESPD_TZ",
+    "source_field": "func_requirements",
+    "target_type": "ESPD_RO",
+    "target_field": "description",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₃"
+    ],
+    "description": "Функц. требования ТЗ → описание функций в РО",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.4"
+  },
+  {
+    "id": "R_032",
+    "source_type": "ESPD_TZ",
+    "source_field": "func_requirements",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_methods",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Функц. требования ТЗ → методы испытаний в ПМИ",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.4"
+  },
+  {
+    "id": "R_033",
+    "source_type": "ESPD_OP",
+    "source_field": "functions",
+    "target_type": "ESPD_RO",
+    "target_field": "description",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₃"
+    ],
+    "description": "Функции ОП → описание функций для пользователя в РО",
+    "norm_ref": "ГОСТ 19.402-78 п. 2.1"
+  },
+  {
+    "id": "R_034",
+    "source_type": "ESKD_PASSPORT",
+    "source_field": "tech_chars",
+    "target_type": "ESPD_RO",
+    "target_field": "description",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Техн. хар-ки из паспорта → описание функций РО",
+    "norm_ref": "ГОСТ 19.505-79 п. 2.3"
+  },
+  {
+    "id": "R_035",
+    "source_type": "ESKD_TU",
+    "source_field": "tech_req",
+    "target_type": "ESPD_TZ",
+    "target_field": "func_requirements",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₆"
+    ],
+    "description": "Технические требования ТУ → функциональные требования ТЗ",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.1"
+  },
+  {
+    "id": "R_036",
+    "source_type": "ESKD_TU",
+    "source_field": "conditions",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_conditions",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₅"
+    ],
+    "description": "Условия эксплуатации ТУ → условия испытаний ПМИ",
+    "norm_ref": "ГОСТ 3.1119-83 п. 3.1"
+  },
+  {
+    "source_type": "ESKD_DETAIL",
+    "source_field": "tech_requirements",
+    "target_type": "ESTD_KTK",
+    "target_field": "control_methods",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Технические требования чертежа → методы контроля в КТК",
+    "norm_ref": "ГОСТ 3.1502-85 п. 2.3",
+    "id": "R_037"
+  },
+  {
+    "source_type": "ESKD_DETAIL",
+    "source_field": "material",
+    "target_type": "ESPD_TZ",
+    "target_field": "hw_req",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Материал детали → аппаратные требования ТЗ",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.2",
+    "id": "R_038"
+  },
+  {
+    "source_type": "ESKD_SPEC",
+    "source_field": "composition",
+    "target_type": "ESPD_TZ",
+    "target_field": "func_requirements",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃",
+      "Ω₆"
+    ],
+    "description": "Состав изделия по спецификации → функциональные требования ТЗ",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.1",
+    "id": "R_039"
+  },
+  {
+    "source_type": "ESKD_SPEC",
+    "source_field": "composition",
+    "target_type": "ESPD_OP",
+    "target_field": "structure",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Состав изделия → структура программы (описание программы)",
+    "norm_ref": "ГОСТ 19.402-78 п. 2.2",
+    "id": "R_040"
+  },
+  {
+    "source_type": "ESKD_PASSPORT",
+    "source_field": "tech_chars",
+    "target_type": "ESPD_TZ",
+    "target_field": "hw_req",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Технические характеристики паспорта → аппаратные требования ТЗ",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.2",
+    "id": "R_041"
+  },
+  {
+    "source_type": "ESKD_RE",
+    "source_field": "conditions",
+    "target_type": "ESPD_RO",
+    "target_field": "conditions",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₅"
+    ],
+    "description": "Условия эксплуатации РЭ → условия применения в руководстве оператора",
+    "norm_ref": "ГОСТ 2.601-2019",
+    "id": "R_042"
+  },
+  {
+    "source_type": "ESKD_TU",
+    "source_field": "guarantee",
+    "target_type": "ESPD_FORMULAR",
+    "target_field": "service_history",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Гарантийные обязательства ТУ → журнал обслуживания (формуляр ПО)",
+    "norm_ref": "ГОСТ 2.601-2019",
+    "id": "R_043"
+  },
+  {
+    "source_type": "ESTD_MK",
+    "source_field": "equipment",
+    "target_type": "ESPD_TZ",
+    "target_field": "hw_req",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂",
+      "Ω₄"
+    ],
+    "description": "Оборудование маршрутной карты → аппаратные требования ТЗ",
+    "norm_ref": "ГОСТ 19.201-78 п. 2.2",
+    "id": "R_044"
+  },
+  {
+    "source_type": "ESTD_OK",
+    "source_field": "cutting_modes",
+    "target_type": "ESPD_RO",
+    "target_field": "execution_order",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₂"
+    ],
+    "description": "Режимы резания операционной карты → порядок выполнения программы",
+    "norm_ref": "ГОСТ 19.505-79",
+    "id": "R_045"
+  },
+  {
+    "source_type": "ESTD_KTK",
+    "source_field": "control_methods",
+    "target_type": "ESPD_PMI",
+    "target_field": "test_methods",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₂",
+      "Ω₅"
+    ],
+    "description": "Методы контроля КТК → методы испытаний программы (ПМИ)",
+    "norm_ref": "ГОСТ 19.301-79 п. 2.2",
+    "id": "R_046"
+  },
+  {
+    "source_type": "ESTD_MK",
+    "source_field": "operations",
+    "target_type": "ESPD_OP",
+    "target_field": "functions",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Операции маршрутной карты → функции программы (описание программы)",
+    "norm_ref": "ГОСТ 19.402-78 п. 2.1",
+    "id": "R_047"
+  },
+  {
+    "id": "R_048",
+    "source_type": "ESKD_SPEC",
+    "source_field": "composition",
+    "target_type": "ESKD_VP",
+    "target_field": "purchased_items",
+    "dep_type": "1",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Изменение состава спецификации → обновление ведомости покупных изделий",
+    "norm_ref": "ГОСТ 2.106-96"
+  },
+  {
+    "id": "R_049",
+    "source_type": "ESKD_VP",
+    "source_field": "purchased_items",
+    "target_type": "ESTD_KK",
+    "target_field": "assembly_composition",
+    "dep_type": "R",
+    "omega_types": [
+      "Ω₃"
+    ],
+    "description": "Покупные изделия ВП → состав комплектовочной карты",
+    "norm_ref": "ГОСТ 3.1122-84"
+  }
+]

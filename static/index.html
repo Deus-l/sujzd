@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>СУЖЦД — Система управления жизненным циклом документации</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0c1a2e;--navy2:#132640;--navy3:#1e3a5f;--blue:#185FA5;--blue-l:#64b5f6;--green:#3B6D11;--green-l:#e8f5e9;--red:#c62828;--red-l:#ffebee;--amber:#854F0B;--amber-l:#fff8e1;--gray:#5F5E5A;--gray-l:#F1EFE8;--border:#dee2e6;--bg:#f8f9fa;--card:#fff;--text:#212529;--text2:#6c757d;--text3:#adb5bd}
+body{font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column}
+.app{display:flex;flex:1;overflow:hidden}
+/* SIDEBAR */
+.sidebar{width:210px;min-width:210px;background:var(--navy);display:flex;flex-direction:column;overflow-y:auto}
+.logo{padding:14px 14px 10px;border-bottom:1px solid var(--navy3)}
+.logo-title{font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue-l);text-transform:uppercase}
+.logo-sub{font-size:9px;color:#90a4ae;margin-top:2px}
+.nav-group{padding:8px 0 4px;border-bottom:1px solid #1e3a5f}
+.nav-section-label{font-size:9px;letter-spacing:1.5px;color:#546e7a;padding:4px 14px 6px;text-transform:uppercase;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:11px;color:#b0bec5;border-left:3px solid transparent;user-select:none}
+.nav-item:hover{background:var(--navy2);color:#e2e8f0}
+.nav-item.active{background:var(--navy2);color:var(--blue-l);border-left-color:var(--blue-l);font-weight:500}
+.nav-icon{font-size:12px;width:16px;text-align:center}
+.badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:600;min-width:16px;text-align:center}
+.sidebar-footer{margin-top:auto;padding:10px 14px;border-top:1px solid var(--navy3);font-size:9px;color:#546e7a;line-height:1.6}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#4caf50;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;color:var(--text)}
+.topbar-sub{font-size:11px;color:var(--text2)}
+.topbar-actions{margin-left:auto;display:flex;gap:8px}
+.content{flex:1;overflow-y:auto;padding:16px 20px}
+/* BUTTONS */
+.btn{padding:6px 12px;border-radius:5px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-size:11px;font-family:inherit}
+.btn:hover{background:var(--bg)}
+.btn-primary{background:var(--navy);color:var(--blue-l);border-color:var(--navy3)}
+.btn-primary:hover{background:var(--navy2)}
+.btn-success{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.btn-success:hover{background:#1b5e20}
+.btn-danger{background:#c62828;color:#fff;border-color:#c62828}
+.btn-sm{padding:3px 8px;font-size:10px}
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.stat-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.stat-value{font-size:24px;font-weight:700;margin-top:4px;font-family:'Courier New',monospace}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:2px}
+/* PANELS */
+.panel{background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:14px;overflow:hidden}
+.panel-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafafa}
+.panel-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2)}
+.panel-body{padding:14px}
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{padding:7px 10px;text-align:left;color:var(--text2);font-weight:600;border-bottom:1px solid var(--border);background:#fafafa;font-size:10px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.tbl td{padding:7px 10px;border-bottom:1px solid #f1f3f5;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#f8f9fa}
+.tbl-empty{text-align:center;padding:24px;color:var(--text3);font-size:12px}
+/* BADGES */
+.badge-std{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+.badge-ЕСКД{background:#e3f2fd;color:#1565c0}
+.badge-ЕСТД{background:#e8f5e9;color:#2e7d32}
+.badge-ЕСПД{background:#ede7f6;color:#4527a0}
+.badge-omega{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:600;font-family:'Courier New',monospace}
+.o1{background:#f5f5f5;color:#616161}.o2{background:#e3f2fd;color:#1565c0}
+.o3{background:#fce4ec;color:#880e4f}.o4{background:#fff8e1;color:#e65100}
+.o5{background:#e8f5e9;color:#1b5e20}.o6{background:#ede7f6;color:#311b92}
+.o7{background:#fce4ec;color:#b71c1c}
+.dep1{background:#e3f2fd;color:#1565c0;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}
+.depR{background:#fff8e1;color:#e65100;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}
+.status-active{background:#e8f5e9;color:#2e7d32;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+.status-pending{background:#fff8e1;color:#e65100;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+.status-resolved{background:#f5f5f5;color:#616161;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+.status-skipped{background:#fce4ec;color:#880e4f;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600}
+.status-no-notif{background:#f5f5f5;color:#9e9e9e;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600;border:1px dashed #bdbdbd}
+code{font-family:'Courier New',monospace;font-size:10px;background:#f5f5f5;padding:1px 4px;border-radius:3px;border:1px solid #e0e0e0}
+/* FORM */
+.form-grid{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center}
+.form-label{font-size:11px;color:var(--text2);font-weight:500}
+.form-input,.form-select,.form-textarea{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:11px;background:#fff;color:var(--text);font-family:inherit}
+.form-textarea{height:70px;resize:vertical}
+.form-row{margin-bottom:8px}
+/* CASCADE GRAPH */
+.cascade-graph{padding:12px;display:flex;flex-direction:column;gap:6px}
+.cascade-node{padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;display:flex;align-items:center;gap:10px}
+.cascade-source{border-left:3px solid var(--red)}
+.cascade-target-1{border-left:3px solid var(--blue)}
+.cascade-target-R{border-left:3px solid var(--amber)}
+.cascade-arrow{padding:2px 12px 2px 26px;font-size:10px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.cascade-node-info{flex:1;min-width:0}
+.cascade-node-title{font-size:11px;font-weight:600}
+.cascade-node-sub{font-size:10px;color:var(--text2);margin-top:2px}
+/* TABS */
+.tab-strip{display:flex;gap:1px;background:#f0f0f0;border-radius:6px;padding:3px;width:fit-content;margin-bottom:14px}
+.tab{padding:5px 12px;border-radius:4px;font-size:11px;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:inherit}
+.tab.active{background:#fff;color:var(--text);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+/* GOST INFO */
+.gost-box{background:#e3f2fd;border:1px solid #90caf9;border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.6;color:#0d47a1;margin-top:10px}
+/* LOADER */
+.loader{text-align:center;padding:24px;color:var(--text2);font-size:12px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:10px;width:580px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.25)}
+.modal-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:14px;font-weight:600}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text2);line-height:1}
+.modal-body{padding:16px}
+.modal-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+/* 2-col grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+/* SHA chip */
+.sha{font-family:'Courier New',monospace;font-size:10px;color:var(--text3)}
+/* Notify pill */
+.pill-urgent{background:#ffebee;color:#c62828;font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600}
+/* Responsive */
+@media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-title">СУЖЦД</div>
+    <div class="logo-sub">Система управления ЖЦД v1.0</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-section-label">Обзор</div>
+    <div class="nav-item active" data-view="dashboard"><span class="nav-icon">◼</span>Дашборд</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-section-label">Репозиторий</div>
+    <div class="nav-item" data-view="documents"><span class="nav-icon">◻</span>Документы</div>
+    <div class="nav-item" data-view="deltas"><span class="nav-icon">△</span>Дельты</div>
+    <div class="nav-item" data-view="cascade"><span class="nav-icon">⇊</span>Каскад</div>
+    <div class="nav-item" data-view="branches"><span class="nav-icon">⑂</span>Ветки</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-section-label">Процессы</div>
+    <div class="nav-item" data-view="notifications"><span class="nav-icon">⚑</span>Уведомления<span class="badge" id="badge-notif">0</span></div>
+    <div class="nav-item" data-view="conflicts"><span class="nav-icon">⊗</span>Конфликты<span class="badge" id="badge-conflict" style="display:none">0</span></div>
+    <div class="nav-item" data-view="audit"><span class="nav-icon">◎</span>Журнал событий</div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-section-label">Система</div>
+    <div class="nav-item" data-view="matrix"><span class="nav-icon">⊞</span>Матрица M[·]</div>
+    <div class="nav-item" data-view="dsr"><span class="nav-icon">⊟</span>Реестр схем (DSR)</div>
+    <div class="nav-item" data-view="ia"><span class="nav-icon">✦</span>AI-Анализ (IA)</div>
+  </div>
+  <div class="sidebar-footer">
+    ГОСТ Р 2.503–2023 · п. 4.2<br>
+    ЕСКД · ЕСТД · ЕСПД<br>
+    <span style="color:#37474f">delta δ = ⟨Type,ID,Field,V₀,V₁⟩</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="status-dot" id="status-dot"></div>
+      <div>
+        <div class="topbar-title" id="page-title">Дашборд</div>
+        <div class="topbar-sub" id="page-sub">Общий обзор состояния документации</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="showDeltaModal()">+ Новая дельта</button>
+      <button class="btn" onclick="navigate('ia')">AI-Анализ ✦</button>
+      <a href="/api/docs" target="_blank"><button class="btn">API Docs ↗</button></a>
+    </div>
+  </div>
+  <div class="content" id="content"><div class="loader"><span class="spinner"></span>Загрузка...</div></div>
+</div>
+</div>
+
+<!-- MODAL: Новый документ -->
+<div class="modal-overlay" id="doc-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Добавить документ</div>
+      <button class="modal-close" onclick="closeDocModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="doc-modal-error" style="display:none;color:var(--red);font-size:11px;margin-bottom:10px;padding:8px;background:var(--red-l);border-radius:4px"></div>
+
+      <!-- Переключатель режима -->
+      <div class="tab-strip" style="margin-bottom:14px">
+        <div class="tab active" id="nd-tab-manual" onclick="switchDocMode('manual')">Вручную</div>
+        <div class="tab" id="nd-tab-file" onclick="switchDocMode('file')">Загрузить файл (.pdf / .docx)</div>
+      </div>
+
+      <!-- Общие поля -->
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">ID документа *</div>
+        <input class="form-input" id="nd-id" placeholder="DOC-008"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Тип документа *</div>
+        <select class="form-select" id="nd-type"><option value="">— загрузка —</option></select>
+      </div></div>
+
+      <!-- Режим: вручную -->
+      <div id="nd-manual-fields">
+        <div class="form-row"><div class="form-grid">
+          <div class="form-label">Наименование *</div>
+          <input class="form-input" id="nd-name" placeholder="Наименование документа"/>
+        </div></div>
+        <div class="form-row"><div class="form-grid">
+          <div class="form-label">Обозначение *</div>
+          <input class="form-input" id="nd-desig" placeholder="СУГИ.301847.024"/>
+        </div></div>
+        <div class="form-row"><div class="form-grid">
+          <div class="form-label">Версия</div>
+          <input class="form-input" id="nd-ver" value="1.0"/>
+        </div></div>
+      </div>
+
+      <!-- Режим: файл -->
+      <div id="nd-file-fields" style="display:none">
+        <div class="form-row">
+          <label style="display:flex;flex-direction:column;gap:6px;cursor:pointer;padding:16px;border:2px dashed var(--border);border-radius:6px;text-align:center;background:#fafafa" id="nd-drop-zone">
+            <span style="font-size:22px">📄</span>
+            <span style="font-size:11px;color:var(--text2)">Нажмите или перетащите файл сюда</span>
+            <span style="font-size:10px;color:var(--text3)">.pdf или .docx · метаданные извлекаются автоматически</span>
+            <input type="file" id="nd-file" accept=".pdf,.docx" style="display:none" onchange="onDocFileChange(this)"/>
+          </label>
+        </div>
+        <div id="nd-file-preview" style="display:none;margin-top:10px;padding:10px;background:var(--gray-l);border-radius:6px;font-size:11px">
+          <div><strong id="nd-file-name"></strong></div>
+          <div style="color:var(--text2);margin-top:4px" id="nd-file-info"></div>
+        </div>
+      </div>
+
+      <div id="nd-upload-result" style="display:none;margin-top:10px;padding:10px;background:#e8f5e9;border:1px solid #81c784;border-radius:6px;font-size:11px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeDocModal()">Отмена</button>
+      <button class="btn btn-primary" id="nd-submit-btn" onclick="submitCreateDoc()">Создать</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Редактировать документ -->
+<div class="modal-overlay" id="edit-doc-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Редактировать документ <code id="ed-doc-id-title" style="font-size:12px"></code></div>
+      <button class="modal-close" onclick="closeEditDocModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="ed-error" style="display:none;color:var(--red);font-size:11px;margin-bottom:10px;padding:8px;background:var(--red-l);border-radius:4px"></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Тип документа</div>
+        <div id="ed-type-info" style="font-size:11px;color:var(--text2);padding:6px 0"></div>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Наименование *</div>
+        <input class="form-input" id="ed-name" placeholder="Наименование документа"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Обозначение</div>
+        <input class="form-input" id="ed-desig" placeholder="СУГИ.301847.024"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Версия</div>
+        <input class="form-input" id="ed-ver" placeholder="1.0"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Статус</div>
+        <select class="form-select" id="ed-status">
+          <option value="active">Актуален</option>
+          <option value="pending">Ожидает обновления</option>
+          <option value="archived">Архивирован</option>
+        </select>
+      </div></div>
+      <div class="gost-box" style="margin-top:10px;font-size:10px">
+        ℹ Для изменения значений полей DSR (материал, допуски, режимы и т.д.) используйте механизм дельт — это обеспечивает версионирование и каскад.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeEditDocModal()">Отмена</button>
+      <button class="btn btn-primary" onclick="submitEditDoc()">Сохранить изменения</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Новая дельта -->
+<div class="modal-overlay" id="delta-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Зафиксировать дельту</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-error" style="display:none;color:var(--red);font-size:11px;margin-bottom:10px;padding:8px;background:var(--red-l);border-radius:4px"></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Документ *</div>
+        <select class="form-select" id="d-doc" onchange="onDocChange()"><option value="">— выберите —</option></select>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Поле *</div>
+        <select class="form-select" id="d-field" onchange="onFieldChange()"><option value="">— выберите документ —</option></select>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Значение «до»</div>
+        <input class="form-input" id="d-vbefore" placeholder="Текущее значение (авто)"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Значение «после» *</div>
+        <input class="form-input" id="d-vafter" placeholder="Новое значение"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Тип Ω *</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select class="form-select" id="d-omega">
+            <option value="Ω₁">Ω₁ — Редакционная</option>
+            <option value="Ω₂" selected>Ω₂ — Параметр компонента</option>
+            <option value="Ω₃">Ω₃ — Изменение состава</option>
+            <option value="Ω₄">Ω₄ — Комплексный показатель</option>
+            <option value="Ω₅">Ω₅ — Изменение процесса</option>
+            <option value="Ω₆">Ω₆ — Нормативное основание</option>
+            <option value="Ω₇">Ω₇ — Инновационное</option>
+          </select>
+          <button class="btn btn-sm" onclick="autoClassify()" title="Автоматическая классификация по ключевым словам">Авто</button>
+        </div>
+        <div id="classify-inline" style="display:none;margin-top:6px;font-size:11px;padding:6px 8px;border-radius:4px;background:var(--bg2);border:1px solid var(--border)"></div>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Автор *</div>
+        <input class="form-input" id="d-author" placeholder="Фамилия И.О."/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Обоснование (ИИ)</div>
+        <input class="form-input" id="d-reason" placeholder="Краткое обоснование изменения"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Ветка</div>
+        <select class="form-select" id="d-branch"><option value="main">main</option></select>
+      </div></div>
+      <div id="cascade-preview" style="display:none;margin-top:10px">
+        <div style="font-size:10px;font-weight:600;color:var(--text2);margin-bottom:6px">ПРЕДВАРИТЕЛЬНЫЙ КАСКАД:</div>
+        <div id="cascade-preview-content"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn btn-primary" onclick="submitDelta()">Зафиксировать δ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let currentView = 'dashboard';
+let allDocuments = [];
+let allBranches = [];
+
+const PAGE_TITLES = {
+  dashboard:'Дашборд', documents:'Документы', deltas:'Дельты',
+  cascade:'Каскад зависимостей', branches:'Ветки (Branch/Merge)',
+  notifications:'Уведомления', conflicts:'Конфликты слияния',
+  audit:'Журнал событий (Event Bus)', matrix:'Матрица зависимостей M[·]',
+  dsr:'Реестр схем документов (DSR)', ia:'AI-Анализ дельт (IA Module)',
+};
+const PAGE_SUBS = {
+  dashboard:'Общий обзор состояния системы и последние события',
+  documents:'Реестр документов ЕСКД / ЕСТД / ЕСПД',
+  deltas:'Журнал атомарных изменений — Delta Repository',
+  cascade:'Граф каскадного распространения выбранной дельты',
+  branches:'Управление параллельными линиями разработки',
+  notifications:'Задачи по зависимым дельтам (ГОСТ Р 2.503–2023, п. 4.2)',
+  conflicts:'Конфликты слияния веток — трёхстороннее разрешение',
+  audit:'Все события шины: DeltaCommitted, DependencyTaskCreated и др.',
+  matrix:'Матрица M[DocType][Field][Ω] — 47 зависимостей ЕСКД/ЕСТД/ЕСПД',
+  dsr:'Document Schema Registry — формальные схемы документов по ГОСТ',
+  ia:'Интеллектуальный анализ дельт: классификация Ω, AI через Claude',
+};
+
+// NAV
+document.querySelectorAll('.nav-item[data-view]').forEach(el => {
+  el.addEventListener('click', () => navigate(el.dataset.view));
+});
+
+function navigate(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.nav-item[data-view="${view}"]`)?.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[view] || view;
+  document.getElementById('page-sub').textContent = PAGE_SUBS[view] || '';
+  render();
+}
+
+async function api(path, opts={}) {
+  const r = await fetch(API + path, {
+    headers: {'Content-Type':'application/json'}, ...opts
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({detail: r.statusText}));
+    throw new Error(err.detail || r.statusText);
+  }
+  return r.json();
+}
+
+function std_badge(std) {
+  return `<span class="badge-std badge-${std}">${std}</span>`;
+}
+function omega_badge(o) {
+  const cls = {'Ω₁':'o1','Ω₂':'o2','Ω₃':'o3','Ω₄':'o4','Ω₅':'o5','Ω₆':'o6','Ω₇':'o7'};
+  return `<span class="badge-omega ${cls[o]||'o2'}">${o}</span>`;
+}
+function status_badge(s) {
+  if(s==='active')   return '<span class="status-active">Актуален</span>';
+  if(s==='pending')  return '<span class="status-pending">Ожидает обновления</span>';
+  if(s==='resolved') return '<span class="status-resolved">Выполнено</span>';
+  if(s==='skipped')  return '<span class="status-skipped">Пропущено</span>';
+  if(s==='ожидает' || s==='no_doc') return '<span class="status-no-notif">Нет уведомления</span>';
+  return s ? `<span class="status-pending">${s}</span>` : '—';
+}
+function dep_badge(d) {
+  return d==='1' ? '<span class="dep1">Обязательная</span>' : '<span class="depR">Рекомендуемая</span>';
+}
+function fmt_date(dt) {
+  if(!dt) return '—';
+  return new Date(dt).toLocaleString('ru',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+// ─────────────── RENDER ───────────────
+async function render() {
+  const c = document.getElementById('content');
+  c.innerHTML = '<div class="loader"><span class="spinner"></span>Загрузка...</div>';
+  try {
+    if (currentView === 'dashboard')     c.innerHTML = await renderDashboard();
+    else if(currentView === 'documents') c.innerHTML = await renderDocuments();
+    else if(currentView === 'deltas')    c.innerHTML = await renderDeltas();
+    else if(currentView === 'cascade')   c.innerHTML = await renderCascade();
+    else if(currentView === 'branches')  c.innerHTML = await renderBranches();
+    else if(currentView === 'notifications') c.innerHTML = await renderNotifications();
+    else if(currentView === 'conflicts') c.innerHTML = await renderConflicts();
+    else if(currentView === 'audit')     c.innerHTML = await renderAudit();
+    else if(currentView === 'matrix')    c.innerHTML = await renderMatrix();
+    else if(currentView === 'dsr')       c.innerHTML = await renderDSR();
+    else if(currentView === 'ia')        c.innerHTML = await renderIA();
+    attachHandlers();
+  } catch(e) {
+    c.innerHTML = `<div class="panel"><div class="panel-body" style="color:var(--red)">Ошибка: ${e.message}</div></div>`;
+  }
+  await updateBadges();
+}
+
+async function updateBadges() {
+  try {
+    const stats = await api('/api/stats');
+    const b = document.getElementById('badge-notif');
+    if(b) { b.textContent = stats.pending_tasks; b.style.display = stats.pending_tasks > 0 ? '' : 'none'; }
+    const bc = document.getElementById('badge-conflict');
+    if(bc) { bc.textContent = stats.open_conflicts; bc.style.display = stats.open_conflicts > 0 ? '' : 'none'; }
+  } catch(e) {}
+}
+
+// ─── DASHBOARD ───
+async function renderDashboard() {
+  const stats = await api('/api/stats');
+  const omegaRows = Object.entries(stats.omega_distribution || {})
+    .map(([o,c]) => `<tr><td>${omega_badge(o)}</td><td><div style="background:#e3f2fd;height:8px;border-radius:4px;width:${Math.round(c/Math.max(stats.deltas,1)*200)}px;max-width:200px;display:inline-block"></div></td><td style="font-weight:600;font-family:monospace">${c}</td></tr>`)
+    .join('');
+
+  const recentDeltas = (stats.recent_deltas||[]).map(d =>
+    `<tr><td><code>${d.short_sha}</code></td>
+     <td><code>${d.doc_id}</code></td>
+     <td style="color:var(--text2)">${d.field_name}</td>
+     <td><del style="color:var(--red)">${d.v_before||'—'}</del></td>
+     <td style="color:var(--green)">${d.v_after}</td>
+     <td>${omega_badge(d.omega_type)}</td>
+     <td>${d.cascade_count > 0 ? `<strong style="color:var(--blue)">${d.cascade_count}</strong>` : '0'}</td></tr>`
+  ).join('') || `<tr><td colspan="7" class="tbl-empty">Дельт нет. Создайте первую изменением.</td></tr>`;
+
+  const urgentNotifs = (stats.urgent_notifications||[]).map(n =>
+    `<tr class="${n.dep_type==='1'?'':''}">
+     <td style="font-size:10px;color:var(--text2)">${n.trigger_doc_nm}</td>
+     <td style="font-size:10px">${n.target_doc_name}</td>
+     <td style="font-size:10px">${n.target_field_nm}</td>
+     <td>${dep_badge(n.dep_type)}</td>
+     <td>${status_badge(n.status)}</td></tr>`
+  ).join('') || `<tr><td colspan="5" class="tbl-empty">Нет ожидающих задач</td></tr>`;
+
+  return `
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Документов</div><div class="stat-value">${stats.documents}</div><div class="stat-sub">ЕСКД + ЕСТД + ЕСПД</div></div>
+    <div class="stat-card"><div class="stat-label">Дельт</div><div class="stat-value">${stats.deltas}</div><div class="stat-sub">атомарных изменений</div></div>
+    <div class="stat-card"><div class="stat-label">Ожидают</div><div class="stat-value" style="color:${stats.pending_tasks>0?'var(--red)':'var(--green)'}">${stats.pending_tasks}</div><div class="stat-sub">${stats.mandatory_pending} обязательных</div></div>
+    <div class="stat-card"><div class="stat-label">Правил в матрице</div><div class="stat-value">${stats.matrix_rules}</div><div class="stat-sub">ЕСКД/ЕСТД/ЕСПД</div></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Последние дельты</div><button class="btn btn-sm" onclick="navigate('deltas')">все →</button></div>
+        <table class="tbl"><tr><th>SHA</th><th>Документ</th><th>Поле</th><th>Было</th><th>Стало</th><th>Ω</th><th>Каскадов</th></tr>
+        ${recentDeltas}</table>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Срочные уведомления</div><button class="btn btn-sm" onclick="navigate('notifications')">все →</button></div>
+        <table class="tbl"><tr><th>Источник</th><th>Целевой документ</th><th>Поле</th><th>Тип зав.</th><th>Статус</th></tr>
+        ${urgentNotifs}</table>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Распределение по Ω</div></div>
+        <div class="panel-body">
+          <table class="tbl"><tr><th>Тип</th><th>Частота</th><th>Кол-во</th></tr>${omegaRows}</table>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Типы дельт Ω₁–Ω₇</div></div>
+        <div class="panel-body" style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          ${[['Ω₁','Редакционная','Опечатки, переоформление. Каскад = ∅'],
+             ['Ω₂','Параметр','Размер, материал, допуск, режим'],
+             ['Ω₃','Состав','Добавление/удаление/замена позиции'],
+             ['Ω₄','Комплексный','Масса, мощность, ресурс, MTBF'],
+             ['Ω₅','Процесс','Новое оборудование, метод обработки'],
+             ['Ω₆','Норматив','Обновление ссылки на ГОСТ/ТУ'],
+             ['Ω₇','Инновация','Принципиально новое решение']].map(([o,n,d])=>
+            `<div style="padding:7px;border:1px solid var(--border);border-radius:5px">
+              <div>${omega_badge(o)} <strong style="font-size:10px">${n}</strong></div>
+              <div style="font-size:9px;color:var(--text2);margin-top:3px">${d}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="gost-box">⚖ <strong>ГОСТ Р 2.503–2023, п. 4.2</strong>: «Изменение документа, требующее изменений в других документах, должно сопровождаться одновременным внесением соответствующих изменений во все взаимосвязанные документы». Система СУЖЦД автоматически вычисляет E(δ) и создаёт обязательные задачи для всех зависимых документов.</div>`;
+}
+
+// ─── DOCUMENTS ───
+async function renderDocuments() {
+  allDocuments = await api('/api/documents');
+  const rows = allDocuments.map(d => {
+    const std = d.doc_type.startsWith('ESKD') ? 'ЕСКД' : d.doc_type.startsWith('ESTD') ? 'ЕСТД' : 'ЕСПД';
+    return `<tr>
+      <td><code>${d.id}</code></td>
+      <td>${std_badge(std)}</td>
+      <td><code>${d.doc_type}</code></td>
+      <td style="font-weight:500">${d.name}</td>
+      <td><code>v${d.version}</code></td>
+      <td>${d.designation}</td>
+      <td>${status_badge(d.status)}</td>
+      <td>${fmt_date(d.updated_at)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="showDocFields('${d.id}')">Поля</button>
+        <button class="btn btn-sm" onclick="showDocHistory('${d.id}')">История</button>
+        <button class="btn btn-sm" onclick="showDocDiff('${d.id}')">Diff</button>
+        <button class="btn btn-sm" onclick="showDocCheckout('${d.id}')">Checkout</button>
+        <button class="btn btn-sm" onclick="showDocVersions('${d.id}')">📦 Версии</button>
+        <button class="btn btn-sm" onclick="downloadDocFile('${d.id}')">⬇ DOCX</button>
+        <button class="btn btn-sm" onclick="showEditDocModal('${d.id}')" title="Редактировать">✏</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDoc('${d.id}')" title="Удалить">🗑</button>
+      </td></tr>`;
+  }).join('') || `<tr><td colspan="9" class="tbl-empty">Документов нет</td></tr>`;
+
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div class="tab-strip">
+      <div class="tab active" onclick="filterDocs('all')">Все (${allDocuments.length})</div>
+      <div class="tab" onclick="filterDocs('ЕСКД')">ЕСКД</div>
+      <div class="tab" onclick="filterDocs('ЕСТД')">ЕСТД</div>
+      <div class="tab" onclick="filterDocs('ЕСПД')">ЕСПД</div>
+    </div>
+    <button class="btn btn-primary" onclick="showCreateDocModal()">+ Добавить документ</button>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Реестр документов</div></div>
+    <table class="tbl"><tr><th>ID</th><th>Стандарт</th><th>Тип</th><th>Наименование</th><th>Версия</th><th>Обозначение</th><th>Статус</th><th>Обновлён</th><th>Действия</th></tr>
+    ${rows}</table>
+  </div>
+  <div id="doc-detail"></div>`;
+}
+
+function _detailLoading(title) {
+  const el = document.getElementById('doc-detail');
+  el.innerHTML = `<div class="panel"><div class="panel-header">
+    <div class="panel-title">${title}</div>
+    <button class="btn btn-sm" onclick="document.getElementById('doc-detail').innerHTML=''">×</button>
+  </div><div class="panel-body"><div class="loader"><span class="spinner"></span>Загрузка...</div></div></div>`;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function _detailError(msg) {
+  const el = document.getElementById('doc-detail');
+  el.innerHTML = `<div class="panel"><div class="panel-body" style="color:var(--red);font-size:11px">
+    Ошибка: ${msg}
+    <button class="btn btn-sm" style="margin-left:8px" onclick="document.getElementById('doc-detail').innerHTML=''">Закрыть</button>
+  </div></div>`;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+async function showDocFields(id) {
+  _detailLoading(`${id} — Поля документа`);
+  try {
+    const data = await api(`/api/documents/${id}/fields`);
+    const rows = (data.fields||[]).map(f =>
+      `<tr>
+        <td><code>${f.id}</code></td>
+        <td>${f.name}</td>
+        <td><code>${f.type}</code></td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${f.current_value}">${f.current_value || '<em style="color:var(--text3)">—</em>'}</td>
+        <td>${f.required ? '<span class="dep1">Да</span>' : '—'}</td>
+        <td>${f.dependencies_count > 0 ? `<strong style="color:var(--blue)">${f.dependencies_count} →</strong>` : '0'}</td>
+        <td><button class="btn btn-sm" onclick="showBlame('${id}','${f.id}','${f.name}')">blame</button></td></tr>`
+    ).join('') || `<tr><td colspan="7" class="tbl-empty">Нет полей</td></tr>`;
+
+    const el = document.getElementById('doc-detail');
+    el.innerHTML = `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">${id} — Поля документа</div>
+          <button class="btn btn-sm" onclick="document.getElementById('doc-detail').innerHTML=''">×</button>
+        </div>
+        <table class="tbl"><tr><th>ID поля</th><th>Наименование</th><th>Тип</th><th>Текущее значение</th><th>Обязат.</th><th>Зависимостей</th><th></th></tr>
+        ${rows}</table>
+      </div>
+      <div id="blame-detail"></div>`;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(e) { _detailError(e.message); }
+}
+
+async function showBlame(docId, fieldId, fieldName) {
+  const bd = document.getElementById('blame-detail');
+  if (bd) {
+    bd.innerHTML = `<div class="panel"><div class="panel-body"><div class="loader"><span class="spinner"></span>Загрузка blame...</div></div></div>`;
+    bd.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  try {
+    const history = await api(`/api/documents/${docId}/blame/${fieldId}`);
+    const rows = history.map(d =>
+      `<tr>
+        <td><code>${d.short_sha}</code></td>
+        <td>${fmt_date(d.committed_at)}</td>
+        <td>${d.author}</td>
+        <td><del style="color:var(--red)">${d.v_before||'—'}</del> → <strong style="color:var(--green)">${d.v_after}</strong></td>
+        <td>${omega_badge(d.omega_type)}</td>
+        <td><code>${d.iin}</code></td>
+        <td style="font-size:10px;color:var(--text2)">${d.reason||'—'}</td></tr>`
+    ).join('') || `<tr><td colspan="7" class="tbl-empty">История изменений отсутствует</td></tr>`;
+
+    const el = document.getElementById('blame-detail');
+    if (!el) return;
+    el.innerHTML = `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">git blame: ${docId}.${fieldId} — «${fieldName}»</div>
+          <button class="btn btn-sm" onclick="document.getElementById('blame-detail').innerHTML=''">×</button>
+        </div>
+        <table class="tbl"><tr><th>SHA</th><th>Время</th><th>Автор</th><th>Было → Стало</th><th>Ω</th><th>ИИ</th><th>Обоснование</th></tr>
+        ${rows}</table>
+      </div>`;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(e) {
+    const el = document.getElementById('blame-detail');
+    if (el) el.innerHTML = `<div style="color:var(--red);padding:8px;font-size:11px">Ошибка blame: ${e.message}</div>`;
+  }
+}
+
+async function showDocHistory(id) {
+  _detailLoading(`История дельт: ${id}`);
+  try {
+    const deltas = await api(`/api/deltas?doc_id=${id}&limit=50`);
+    const rows = deltas.map(d =>
+      `<tr><td><code>${d.short_sha}</code></td><td><code>${d.field_id}</code> · ${d.field_name}</td>
+       <td><del style="color:var(--red)">${d.v_before||'—'}</del> → <strong style="color:var(--green)">${d.v_after}</strong></td>
+       <td>${omega_badge(d.omega_type)}</td><td>${d.author}</td><td>${fmt_date(d.committed_at)}</td>
+       <td><button class="btn btn-sm" onclick="showCascadeForDelta('${d.id}')">каскад</button></td></tr>`
+    ).join('') || `<tr><td colspan="7" class="tbl-empty">Дельт нет</td></tr>`;
+
+    const el = document.getElementById('doc-detail');
+    el.innerHTML = `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">История дельт: ${id}</div>
+          <button class="btn btn-sm" onclick="document.getElementById('doc-detail').innerHTML=''">×</button>
+        </div>
+        <table class="tbl"><tr><th>SHA</th><th>Поле</th><th>Изменение</th><th>Ω</th><th>Автор</th><th>Время</th><th></th></tr>
+        ${rows}</table>
+      </div>`;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(e) { _detailError(e.message); }
+}
+
+// ─── DELTAS ───
+async function renderDeltas() {
+  const deltas = await api('/api/deltas?limit=200');
+  const rows = deltas.map(d =>
+    `<tr>
+      <td><code>${d.short_sha}</code></td>
+      <td><code>${d.doc_id}</code></td>
+      <td style="font-size:10px;color:var(--text2)">${d.field_name}</td>
+      <td style="color:var(--red);text-decoration:line-through;font-size:10px">${d.v_before||'—'}</td>
+      <td style="color:var(--green);font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.v_after}">${d.v_after}</td>
+      <td>${omega_badge(d.omega_type)}</td>
+      <td style="font-size:10px">${d.author}</td>
+      <td><code style="font-size:9px">${d.iin}</code></td>
+      <td style="font-weight:${d.cascade_count>0?700:400};color:${d.cascade_count>0?'var(--blue)':'var(--text3)'}">${d.cascade_count}</td>
+      <td>${fmt_date(d.committed_at)}</td>
+      <td>
+        <button class="btn btn-sm" onclick="showCascadeForDelta('${d.id}')">каскад</button>
+        <button class="btn btn-sm" onclick="showAIAnalysis('${d.id}')">AI</button>
+      </td></tr>`
+  ).join('') || `<tr><td colspan="11" class="tbl-empty">Дельт нет. Нажмите «+ Новая дельта».</td></tr>`;
+
+  return `
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+    <button class="btn btn-primary" onclick="showDeltaModal()">+ Новая дельта</button>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Журнал дельт (DAG-история) — ${deltas.length} записей</div>
+    </div>
+    <table class="tbl"><tr><th>SHA</th><th>Документ</th><th>Поле</th><th>Было</th><th>Стало</th><th>Ω</th><th>Автор</th><th>ИИ</th><th>Каскадов</th><th>Время</th><th>Действия</th></tr>
+    ${rows}</table>
+  </div>
+  <div id="cascade-detail-inline"></div>`;
+}
+
+let lastCascadeDeltaId = null;
+
+async function showCascadeForDelta(deltaId) {
+  lastCascadeDeltaId = deltaId;
+  navigate('cascade');
+}
+
+// ─── CASCADE ───
+async function renderCascade() {
+  const deltas = await api('/api/deltas?limit=50');
+  if(!deltas.length) return '<div class="panel"><div class="panel-body">Нет дельт. Создайте первую.</div></div>';
+
+  const targetId = lastCascadeDeltaId || deltas[0].id;
+  const cascade = await api(`/api/deltas/${targetId}/cascade`);
+
+  const selector = deltas.map(d =>
+    `<option value="${d.id}" ${d.id===targetId?'selected':''}>${d.short_sha} — ${d.field_name}: ${d.v_before||'—'} → ${d.v_after}</option>`
+  ).join('');
+
+  const sourceNode = cascade.nodes?.[0];
+  const targetNodes = (cascade.nodes||[]).slice(1);
+
+  const cascadeHTML = targetNodes.length === 0
+    ? `<div style="padding:12px;color:var(--text2);font-size:11px">Тип Ω₁ — каскадных зависимостей нет (редакционное изменение)</div>`
+    : targetNodes.map(n => {
+        const cls = n.dep_type === '1' ? 'cascade-target-1' : 'cascade-target-R';
+        const depLabel = n.dep_type === '1' ? dep_badge('1') : dep_badge('R');
+        const noNotif = (n.status === 'ожидает' || n.status === 'no_doc');
+        const actionBtn = noNotif
+          ? `<button class="btn btn-sm" style="font-size:9px;padding:2px 6px" onclick="recalcCascadeGlobal(this)">+ создать</button>`
+          : (n.status === 'pending'
+              ? `<button class="btn btn-sm btn-success" style="font-size:9px;padding:2px 6px" onclick="navigate('notifications')">→ закрыть</button>`
+              : '');
+        return `
+          <div class="cascade-arrow">▼ ${depLabel}</div>
+          <div class="cascade-node ${cls}">
+            <div class="cascade-node-info">
+              <div class="cascade-node-title">${n.doc_type} · поле: <code>${n.target_field}</code> — ${n.target_field_name}</div>
+              <div class="cascade-node-sub">${n.description}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+              ${status_badge(n.status)}
+              ${actionBtn}
+            </div>
+          </div>`;
+      }).join('');
+
+  return `
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Выберите дельту</div></div>
+    <div class="panel-body">
+      <select class="form-select" onchange="lastCascadeDeltaId=this.value;render()" style="max-width:600px">
+        ${selector}
+      </select>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Исходная дельта</div>${omega_badge(cascade.omega||'Ω₁')}</div>
+      <div class="panel-body">
+        ${sourceNode ? `
+        <div class="form-row"><div class="form-grid"><div class="form-label">Документ</div><code>${sourceNode.doc_id}</code> — ${sourceNode.doc_name}</div></div>
+        <div class="form-row"><div class="form-grid"><div class="form-label">Поле</div><code>${sourceNode.field}</code> · ${sourceNode.field_name}</div></div>
+        <div class="form-row"><div class="form-grid"><div class="form-label">Было</div><span style="color:var(--red);text-decoration:line-through">${sourceNode.v_before||'—'}</span></div></div>
+        <div class="form-row"><div class="form-grid"><div class="form-label">Стало</div><strong style="color:var(--green)">${sourceNode.v_after}</strong></div></div>
+        ` : ''}
+        <div style="margin-top:10px;padding:8px;background:var(--gray-l);border-radius:4px;font-size:10px">
+          <strong>Итого каскад:</strong> ${cascade.total_cascade||0} документов
+          (${cascade.mandatory||0} обязательных, ${cascade.recommended||0} рекомендуемых)
+          ${cascade.requires_ii ? '· <strong>Требует ИИ</strong>' : ''}
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Граф каскада E(δ)</div></div>
+      <div class="cascade-graph">
+        ${sourceNode ? `<div class="cascade-node cascade-source"><div class="cascade-node-info">
+          <div class="cascade-node-title">${omega_badge(cascade.omega)} ${sourceNode.doc_type}</div>
+          <div class="cascade-node-sub">${sourceNode.field_name}: <del>${sourceNode.v_before||'—'}</del> → <strong>${sourceNode.v_after}</strong></div>
+        </div></div>` : ''}
+        ${cascadeHTML}
+      </div>
+    </div>
+  </div>
+  <div class="gost-box">
+    ⚖ <strong>${cascade.gost_reference||'ГОСТ Р 2.503–2023, п. 4.2'}</strong>: все обязательные (тип «1») зависимые документы должны быть обновлены одновременно. Ответственный за верификацию — автор дельты. Уведомления направлены исполнителям.
+  </div>`;
+}
+
+// ─── BRANCHES ───
+async function renderBranches() {
+  allBranches = await api('/api/branches');
+  const rows = allBranches.map(b =>
+    `<tr>
+      <td><strong>${b.name}</strong></td>
+      <td style="font-size:10px;color:var(--text2)">${b.description||'—'}</td>
+      <td>${b.base_branch}</td>
+      <td>${b.head_delta ? `<code>${b.head_delta.substring(0,8)}</code>` : '—'}</td>
+      <td>${b.is_merged ? '<span class="status-resolved">Слита</span>' : '<span class="status-active">Активна</span>'}</td>
+      <td>${fmt_date(b.created_at)}</td>
+      <td>${!b.is_merged && b.name!=='main' ? `<button class="btn btn-sm" onclick="mergeBranch('${b.name}')">Слить в main</button>` : '—'}</td></tr>`
+  ).join('') || `<tr><td colspan="7" class="tbl-empty">Только ветка main</td></tr>`;
+
+  return `
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+    <button class="btn btn-primary" onclick="showCreateBranchModal()">+ Создать ветку</button>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Ветки репозитория</div></div>
+    <table class="tbl"><tr><th>Имя</th><th>Описание</th><th>Базовая ветка</th><th>HEAD</th><th>Статус</th><th>Создана</th><th>Действие</th></tr>
+    ${rows}</table>
+  </div>
+  <div id="merge-result"></div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Создать ветку</div></div>
+    <div class="panel-body">
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Имя ветки</div>
+        <input class="form-input" id="br-name" placeholder="feature/замена-транзистора-Q5"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Описание</div>
+        <input class="form-input" id="br-desc" placeholder="Краткое описание цели ветки"/>
+      </div></div>
+      <div class="form-row"><div class="form-grid">
+        <div class="form-label">Базовая ветка</div>
+        <select class="form-select" id="br-base">
+          ${allBranches.filter(b=>!b.is_merged).map(b=>`<option>${b.name}</option>`).join('')}
+        </select>
+      </div></div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="createBranch()">Создать ветку ⑂</button>
+    </div>
+  </div>`;
+}
+
+async function createBranch() {
+  const name = document.getElementById('br-name')?.value?.trim();
+  const desc = document.getElementById('br-desc')?.value||'';
+  const base = document.getElementById('br-base')?.value||'main';
+  if(!name) { alert('Укажите имя ветки'); return; }
+  await api('/api/branches', {method:'POST', body:JSON.stringify({name,description:desc,base})});
+  navigate('branches');
+}
+
+async function mergeBranch(source) {
+  if(!confirm(`Слить «${source}» в «main»?`)) return;
+  const result = await api('/api/branches/merge', {method:'POST', body:JSON.stringify({source, target:'main'})});
+  const el = document.getElementById('merge-result');
+  if(el) el.innerHTML = result.status === 'ok'
+    ? `<div class="gost-box" style="background:var(--green-l);border-color:#81c784">✓ Слито успешно. Объединено полей: ${result.merged_fields}</div>`
+    : `<div class="gost-box" style="background:var(--red-l);border-color:#ef9a9a">⚡ Конфликты: ${result.conflicts.length}. <a href="#" onclick="navigate('conflicts')">Разрешить →</a></div>`;
+  await render();
+}
+
+// ─── NOTIFICATIONS ───
+async function renderNotifications() {
+  const notifs = await api('/api/notifications?limit=200');
+  const pending = notifs.filter(n=>n.status==='pending');
+  const done = notifs.filter(n=>n.status!=='pending');
+
+  const makeRows = arr => arr.map(n => {
+    const overdue = n.deadline && new Date(n.deadline) < new Date() && n.status==='pending';
+    return `<tr ${overdue?'style="background:#fff5f5"':''}>
+      <td><code style="font-size:9px">${n.delta_id.substring(0,8)}</code></td>
+      <td style="font-size:10px;color:var(--text2)">${n.trigger_doc_nm}</td>
+      <td style="font-size:10px">${n.target_doc_type} — ${n.target_doc_name}</td>
+      <td><code style="font-size:9px">${n.target_field}</code> · ${n.target_field_nm}</td>
+      <td>${dep_badge(n.dep_type)}</td>
+      <td>${omega_badge(n.omega_type)}</td>
+      <td style="font-size:10px;${overdue?'color:var(--red);font-weight:600':''}">${fmt_date(n.deadline)}</td>
+      <td>${status_badge(n.status)}</td>
+      <td>
+        ${n.status==='pending'?`
+          <button class="btn btn-sm btn-success" onclick="resolveNotif(${n.id})">✓</button>
+          <button class="btn btn-sm" onclick="skipNotif(${n.id})">пропустить</button>
+        `:'—'}
+      </td></tr>`;
+  }).join('') || `<tr><td colspan="9" class="tbl-empty">Нет</td></tr>`;
+
+  const statGrid = `
+  <div class="stat-grid" style="margin-bottom:14px">
+    <div class="stat-card"><div class="stat-label">Ожидают</div><div class="stat-value" style="color:var(--red)">${pending.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Обязательных</div><div class="stat-value">${pending.filter(n=>n.dep_type==='1').length}</div></div>
+    <div class="stat-card"><div class="stat-label">Рекомендуемых</div><div class="stat-value">${pending.filter(n=>n.dep_type==='R').length}</div></div>
+    <div class="stat-card"><div class="stat-label">Выполнено</div><div class="stat-value" style="color:var(--green)">${done.filter(n=>n.status==='resolved').length}</div></div>
+  </div>`;
+
+  return statGrid + `
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Ожидающие задачи (${pending.length})</div></div>
+    <table class="tbl"><tr><th>Дельта</th><th>Источник</th><th>Целевой документ</th><th>Поле</th><th>Тип зав.</th><th>Ω</th><th>Дедлайн</th><th>Статус</th><th>Действие</th></tr>
+    ${makeRows(pending)}</table>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Закрытые задачи (${done.length})</div></div>
+    <table class="tbl"><tr><th>Дельта</th><th>Источник</th><th>Целевой документ</th><th>Поле</th><th>Тип зав.</th><th>Ω</th><th>Дедлайн</th><th>Статус</th><th></th></tr>
+    ${makeRows(done)}</table>
+  </div>`;
+}
+
+async function resolveNotif(id) {
+  const notes = prompt('Краткое описание выполненных действий (необязательно):') || '';
+  await api(`/api/notifications/${id}/resolve`, {method:'PUT', body:JSON.stringify({notes})});
+  render();
+}
+async function skipNotif(id) {
+  if(!confirm('Пропустить задачу? (только для необязательных)')) return;
+  await api(`/api/notifications/${id}/skip`, {method:'PUT'});
+  render();
+}
+
+// ─── CONFLICTS ───
+async function renderConflicts() {
+  const conflicts = await api('/api/conflicts');
+  const rows = conflicts.map(c =>
+    `<tr>
+      <td><code>${c.id}</code></td>
+      <td><code>${c.doc_id}</code></td>
+      <td><code>${c.field_id}</code></td>
+      <td>${c.branch_a}</td>
+      <td>${c.branch_b}</td>
+      <td style="color:var(--text2)">${c.value_base||'—'}</td>
+      <td style="color:var(--blue)">${c.value_a}</td>
+      <td style="color:var(--amber)">${c.value_b}</td>
+      <td>${status_badge(c.status)}</td>
+      <td><button class="btn btn-sm btn-primary" onclick="resolveConflict(${c.id},'${c.field_id}')">Разрешить</button></td></tr>`
+  ).join('') || `<tr><td colspan="10" class="tbl-empty">Конфликтов нет</td></tr>`;
+
+  return `
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Конфликты слияния (${conflicts.length})</div></div>
+    <table class="tbl"><tr><th>ID</th><th>Документ</th><th>Поле</th><th>Ветка A</th><th>Ветка B</th><th>База</th><th>Значение A</th><th>Значение B</th><th>Статус</th><th>Действие</th></tr>
+    ${rows}</table>
+  </div>`;
+}
+
+async function resolveConflict(id, field) {
+  const val = prompt(`Разрешить конфликт поля «${field}».\nВведите финальное значение:`);
+  if(val === null) return;
+  const resolver = prompt('Ваше имя:') || '';
+  await api('/api/conflicts/resolve', {method:'POST', body:JSON.stringify({conflict_id:id, resolved_value:val, resolver})});
+  render();
+}
+
+// ─── AUDIT ───
+async function renderAudit() {
+  const events = await api('/api/audit?limit=100');
+  const rows = events.map(e =>
+    `<tr>
+      <td><code>${e.id}</code></td>
+      <td style="font-weight:500">${e.event_type}</td>
+      <td style="font-size:10px;font-family:monospace;max-width:400px;overflow:hidden">${JSON.stringify(e.payload)}</td>
+      <td>${fmt_date(e.occurred_at)}</td></tr>`
+  ).join('') || `<tr><td colspan="4" class="tbl-empty">Событий нет</td></tr>`;
+
+  return `
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Журнал событий шины (Event Bus) — ${events.length} событий</div></div>
+    <table class="tbl"><tr><th>ID</th><th>Тип события</th><th>Payload</th><th>Время</th></tr>
+    ${rows}</table>
+  </div>`;
+}
+
+// ─── MATRIX ───
+async function renderMatrix() {
+  const data = await api('/api/matrix');
+  const stats = await api('/api/matrix/stats');
+  const rows = (data.rules||[]).map(r =>
+    `<tr>
+      <td><code style="font-size:10px">${r.source_type}</code></td>
+      <td><code style="font-size:10px">${r.source_field}</code></td>
+      <td><code style="font-size:10px">${r.target_type}</code></td>
+      <td><code style="font-size:10px">${r.target_field}</code></td>
+      <td>${dep_badge(r.dep_type)}</td>
+      <td>${(r.omega_types||[]).map(o=>omega_badge(o)).join(' ')}</td>
+      <td style="font-size:10px;color:var(--text2)">${r.description}</td></tr>`
+  ).join('') || `<tr><td colspan="7" class="tbl-empty">Пусто</td></tr>`;
+
+  return `
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Всего правил</div><div class="stat-value">${stats.total_rules}</div></div>
+    <div class="stat-card"><div class="stat-label">Обязательных</div><div class="stat-value">${stats.mandatory}</div></div>
+    <div class="stat-card"><div class="stat-label">Рекомендуемых</div><div class="stat-value">${stats.recommended}</div></div>
+    <div class="stat-card"><div class="stat-label">Типов-источников</div><div class="stat-value">${(stats.source_types||[]).length}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">M[source_type][source_field][Ω] → {target_type, target_field, dep}</div>
+      <button class="btn btn-sm" onclick="reloadMatrix()">Перезагрузить из файла</button>
+      <button class="btn btn-sm" onclick="recalcCascade(this)" style="margin-left:8px;background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7">Пересчитать каскад</button>
+    </div>
+    <table class="tbl"><tr><th>Источник (тип)</th><th>Поле источника</th><th>Цель (тип)</th><th>Поле цели</th><th>Тип зав.</th><th>Ω</th><th>Описание</th></tr>
+    ${rows}</table>
+  </div>`;
+}
+
+async function reloadMatrix() {
+  const r = await api('/api/matrix/reload', {method:'POST'});
+  alert(`Матрица перезагружена. Правил: ${r.rules}`);
+  render();
+}
+
+async function recalcCascade(btn) {
+  btn.disabled = true;
+  btn.textContent = 'Пересчёт...';
+  try {
+    const r = await api('/api/admin/recalculate-cascade', {method:'POST'});
+    alert(r.message);
+    render();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Пересчитать каскад';
+  }
+}
+// Вызывается из кнопки «+ создать» в узлах каскадного графа
+async function recalcCascadeGlobal(btn) {
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    const r = await api('/api/admin/recalculate-cascade', {method:'POST'});
+    render();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '+ создать';
+  }
+}
+
+// ─── DSR ───
+async function renderDSR() {
+  const types = await api('/api/dsr');
+  const grouped = {};
+  types.forEach(t => { (grouped[t.std] = grouped[t.std]||[]).push(t); });
+
+  let html = '';
+  for(const [std, tlist] of Object.entries(grouped)) {
+    const rows = tlist.map(t => {
+      const fields = (t.fields||[]).length;
+      const links = (t.fields||[]).flatMap(f=>f.links||[]).length;
+      return `<tr>
+        <td><code>${t.code}</code></td>
+        <td><strong>${t.short_code}</strong></td>
+        <td>${t.name}</td>
+        <td style="font-size:10px;color:var(--text2)">${t.gost}</td>
+        <td style="text-align:center">${fields}</td>
+        <td style="text-align:center;font-weight:${links>0?600:400};color:${links>0?'var(--blue)':'var(--text3)'}">${links}</td>
+        <td><button class="btn btn-sm" onclick="showDSRFields('${t.code}')">Схема</button></td></tr>`;
+    }).join('');
+    html += `
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">${std_badge(std)} ${std} — ${tlist.length} типов документов</div></div>
+      <table class="tbl"><tr><th>Код типа</th><th>Код</th><th>Наименование</th><th>ГОСТ</th><th>Полей</th><th>Ссылок</th><th></th></tr>
+      ${rows}</table>
+    </div>`;
+  }
+
+  return html + '<div id="dsr-fields-detail"></div>';
+}
+
+async function showDSRFields(code) {
+  const el = document.getElementById('dsr-fields-detail');
+  el.innerHTML = `<div class="panel"><div class="panel-header">
+    <div class="panel-title">Схема: ${code}</div>
+    <button class="btn btn-sm" onclick="document.getElementById('dsr-fields-detail').innerHTML=''">×</button>
+  </div><div class="panel-body"><div class="loader"><span class="spinner"></span>Загрузка схемы...</div></div></div>`;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+
+  try {
+    const t = await api(`/api/dsr/${code}`);
+    const fields = t.fields || [];
+    const rows = fields.map(f => {
+      const links = (f.links || []);
+      const linksHtml = links.length
+        ? links.map(l => `<code style="font-size:9px;margin-right:3px">${l}</code>`).join(' ')
+        : '—';
+      const matrixCount = f.matrix_rules_count || 0;
+      return `<tr>
+        <td><code>${f.id}</code></td>
+        <td>${f.name}</td>
+        <td><code>${f.type || 'string'}</code></td>
+        <td>${f.required ? '<span class="dep1">Да</span>' : '—'}</td>
+        <td style="font-size:10px">${linksHtml}</td>
+        <td style="text-align:center;font-weight:${matrixCount>0?600:400};color:${matrixCount>0?'var(--blue)':'var(--text3)'}">${matrixCount||'—'}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="6" class="tbl-empty">Нет полей в схеме</td></tr>';
+
+    el.innerHTML = `
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">${t.code} — ${t.name}</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:10px;color:var(--text2)">${t.gost || ''}</span>
+            <span class="badge-std badge-${t.std||'ЕСКД'}">${t.std||''}</span>
+            <button class="btn btn-sm" onclick="document.getElementById('dsr-fields-detail').innerHTML=''">×</button>
+          </div>
+        </div>
+        <div style="padding:8px 14px;background:#f8f9fa;border-bottom:1px solid var(--border);font-size:10px;color:var(--text2)">
+          Полей: <strong>${fields.length}</strong> ·
+          Обязательных: <strong>${fields.filter(f=>f.required).length}</strong> ·
+          DSR-ссылок: <strong>${fields.reduce((s,f)=>s+(f.links||[]).length,0)}</strong>
+        </div>
+        <table class="tbl">
+          <tr><th>ID поля</th><th>Наименование</th><th>Тип</th><th>Обязат.</th><th>Ссылки (links)</th><th>Правил в матрице</th></tr>
+          ${rows}
+        </table>
+      </div>`;
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  } catch(e) {
+    el.innerHTML = `<div class="panel"><div class="panel-body" style="color:var(--red);font-size:11px">
+      Ошибка загрузки схемы: ${e.message}
+      <button class="btn btn-sm" style="margin-left:8px" onclick="document.getElementById('dsr-fields-detail').innerHTML=''">Закрыть</button>
+    </div></div>`;
+  }
+}
+
+// ─── IA MODULE ───
+async function renderIA() {
+  const deltas = await api('/api/deltas?limit=50');
+  const deltaOpts = deltas.map(d => `<option value="${d.id}">${d.short_sha} — ${d.field_name}: «${d.v_after}»</option>`).join('');
+
+  return `
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Классификация Ω (детерминированная)</div></div>
+      <div class="panel-body">
+        <div class="form-row"><div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">ID поля</div>
+          <input class="form-input" id="cl-field" placeholder="material, tolerance, composition…"/></div>
+        <div class="form-row" style="margin-top:6px"><div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Значение «до»</div>
+          <input class="form-input" id="cl-vb" placeholder="Ст3"/></div>
+        <div class="form-row" style="margin-top:6px"><div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Значение «после»</div>
+          <input class="form-input" id="cl-va" placeholder="Ст45 ГОСТ 1050-2013"/></div>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="runClassify()">Классифицировать</button>
+        <div id="classify-result" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">✦ AI-Анализ дельты (IA Module)</div></div>
+      <div class="panel-body">
+
+        <!-- Провайдер -->
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="tab-strip" id="ai-provider-strip">
+            <div class="tab active" id="ai-tab-mg"  onclick="switchAIProvider('modelgate')">ModelGate</div>
+            <div class="tab"        id="ai-tab-or"  onclick="switchAIProvider('openrouter')">OpenRouter (free)</div>
+            <div class="tab"        id="ai-tab-groq" onclick="switchAIProvider('groq')">Groq</div>
+            <div class="tab"        id="ai-tab-hf"   onclick="switchAIProvider('huggingface')">HuggingFace</div>
+            <div class="tab"        id="ai-tab-ant"  onclick="switchAIProvider('anthropic')">Anthropic</div>
+          </div>
+        </div>
+
+        <!-- Выбор дельты -->
+        <div class="form-row"><div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Дельта</div>
+          <select class="form-select" id="ai-delta-sel">${deltaOpts}</select>
+        </div>
+
+        <!-- Блок OpenRouter -->
+        <div id="ai-or-block" style="display:none">
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Модель</div>
+            <select class="form-select" id="ai-or-model">
+              <option value="">Авто (перебор резервных моделей)</option>
+              <option value="deepseek/deepseek-v4-flash:free">DeepSeek V4 Flash (рекомендуется)</option>
+              <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B</option>
+              <option value="qwen/qwen3-coder:free">Qwen3 Coder</option>
+              <option value="openai/gpt-oss-120b:free">GPT OSS 120B</option>
+              <option value="google/gemma-4-31b-it:free">Gemma 4 31B</option>
+              <option value="nousresearch/hermes-3-llama-3.1-405b:free">Hermes 3 405B</option>
+              <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B (быстро)</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin-top:6px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">OpenRouter API Key</div>
+            <input class="form-input" id="ai-or-key" type="password" placeholder="sk-or-… (из openrouter.ai/keys)"/>
+          </div>
+        </div>
+
+        <!-- Блок ModelGate -->
+        <div id="ai-mg-block">
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Модель</div>
+            <select class="form-select" id="ai-mg-model">
+              <option value="deepseek-v4-pro">DeepSeek V4 Pro (рекомендуется)</option>
+              <option value="deepseek-v3">DeepSeek V3</option>
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o Mini</option>
+              <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin-top:6px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">ModelGate API Key</div>
+            <input class="form-input" id="ai-mg-key" type="password" placeholder="rp_… (из modelgate.ru)"/>
+          </div>
+        </div>
+
+        <!-- Блок Groq -->
+        <div id="ai-groq-block" style="display:none">
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Модель</div>
+            <select class="form-select" id="ai-groq-model">
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (рекомендуется)</option>
+              <option value="llama-3.1-8b-instant">Llama 3.1 8B (быстрее)</option>
+              <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+              <option value="gemma2-9b-it">Gemma 2 9B</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin-top:6px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Groq API Key</div>
+            <input class="form-input" id="ai-groq-key" type="password" placeholder="gsk_… (из console.groq.com)"/>
+          </div>
+          <div style="font-size:10px;color:var(--green,#2e7d32);background:#e8f5e9;padding:6px 8px;border-radius:4px;margin-top:6px">
+            ✓ Ключ уже настроен в сервере — поле можно оставить пустым.<br>
+            🆓 Бесплатно: <strong>6 000 запросов/день</strong> · <strong>console.groq.com</strong>
+          </div>
+        </div>
+
+        <!-- Блок HF -->
+        <div id="ai-hf-block" style="display:none">
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Модель</div>
+            <select class="form-select" id="ai-hf-model">
+              <option value="Qwen/Qwen2.5-72B-Instruct">Qwen2.5-72B-Instruct (рекомендуется)</option>
+              <option value="Qwen/Qwen3-8B">Qwen3-8B (быстрее)</option>
+              <option value="meta-llama/Llama-3.1-8B-Instruct">Llama-3.1-8B-Instruct</option>
+              <option value="mistralai/Mistral-7B-Instruct-v0.3">Mistral-7B-Instruct-v0.3</option>
+              <option value="deepseek-ai/DeepSeek-V3-0324">DeepSeek-V3 (мощный)</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin-top:6px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">HF Token</div>
+            <input class="form-input" id="ai-hf-key" type="password" placeholder="hf_… (если не задан в run.sh)"/>
+          </div>
+          <div style="font-size:10px;color:var(--text2);background:var(--bg2);padding:6px 8px;border-radius:4px;margin-top:6px">
+            Токен: <strong>huggingface.co → Settings → Access Tokens → New token (Read)</strong><br>
+            Провайдеры перебираются автоматически (novita, together, fireworks-ai, nebius, hf-inference).
+            Для крупных моделей может потребоваться платный аккаунт HF.
+          </div>
+        </div>
+
+        <!-- Блок Anthropic -->
+        <div id="ai-ant-block" style="display:none">
+          <div class="form-row" style="margin-top:8px">
+            <div class="form-label" style="font-size:11px;color:var(--text2);margin-bottom:4px">Anthropic API Key</div>
+            <input class="form-input" id="ai-ant-key" type="password" placeholder="sk-ant-…"/>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="runAIAnalysis()">Анализировать ✦</button>
+        <div id="ai-result" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><div class="panel-title">Адаптеры форматов (IA Module)</div></div>
+    <div class="panel-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      ${[
+        ['STEP ISO 10303-21','3D-модели CAD','POST /api/ia/step','Нормализация → структурный diff → семантическое обогащение'],
+        ['XLSX / ODS','Спецификации, МК, ведомости','POST /api/ia/xlsx','Diff именованных ячеек с маппингом к полям ГОСТ'],
+        ['DOCX / ODT','ПЗ, ТУ, РЭ, ТЗ, паспорт','POST /api/ia/docx','Структурный diff абзацев с привязкой к разделам ГОСТ'],
+      ].map(([fmt,for_,ep,desc]) => `
+        <div style="padding:10px;border:1px solid var(--border);border-radius:6px">
+          <div style="font-weight:600;margin-bottom:4px">${fmt}</div>
+          <div style="font-size:10px;color:var(--text2);margin-bottom:4px">${for_}</div>
+          <div style="font-size:10px;color:var(--blue)"><code>${ep}</code></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">${desc}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+async function runClassify() {
+  const field = document.getElementById('cl-field')?.value||'';
+  const vb = document.getElementById('cl-vb')?.value||'';
+  const va = document.getElementById('cl-va')?.value||'';
+  const r = await api('/api/ia/classify', {method:'POST', body:JSON.stringify({field_id:field, v_before:vb, v_after:va})});
+  document.getElementById('classify-result').innerHTML = `
+    <div style="padding:10px;background:var(--gray-l);border-radius:5px;font-size:11px">
+      <div><strong>Рекомендуемый тип:</strong> ${omega_badge(r.suggested_omega)} — уверенность ${r.confidence}%</div>
+      <div style="margin-top:6px"><strong>Уровень существенности:</strong> ${r.level} (${r.significance_score}/5)</div>
+      <div style="margin-top:4px;color:var(--text2)">Совпавшие признаки: ${(r.matched_keywords||[]).join(', ')||'—'}</div>
+    </div>`;
+}
+
+let _aiProvider = 'modelgate';
+
+function switchAIProvider(p) {
+  _aiProvider = p;
+  document.getElementById('ai-tab-or').classList.toggle('active',   p === 'openrouter');
+  document.getElementById('ai-tab-mg').classList.toggle('active',   p === 'modelgate');
+  document.getElementById('ai-tab-groq').classList.toggle('active', p === 'groq');
+  document.getElementById('ai-tab-hf').classList.toggle('active',   p === 'huggingface');
+  document.getElementById('ai-tab-ant').classList.toggle('active',  p === 'anthropic');
+  document.getElementById('ai-or-block').style.display   = p === 'openrouter' ? '' : 'none';
+  document.getElementById('ai-mg-block').style.display   = p === 'modelgate'  ? '' : 'none';
+  document.getElementById('ai-groq-block').style.display = p === 'groq'       ? '' : 'none';
+  document.getElementById('ai-hf-block').style.display   = p === 'huggingface'? '' : 'none';
+  document.getElementById('ai-ant-block').style.display  = p === 'anthropic'  ? '' : 'none';
+}
+
+function _aiProviderBadge(provider) {
+  const cfg = {
+    'openrouter':  ['#f3e8ff','#6b21a8','OpenRouter'],
+    'modelgate':   ['#e8f0fe','#1a56db','ModelGate'],
+    'groq':        ['#e8f5e9','#2e7d32','Groq'],
+    'huggingface': ['#fff3cd','#856404','HuggingFace'],
+    'anthropic':   ['#e3f2fd','#1565c0','Anthropic'],
+  };
+  const [bg, color, label] = cfg[provider] || cfg[Object.keys(cfg).find(k => provider?.startsWith(k))] || ['#f5f5f5','#333', provider];
+  return `<span style="background:${bg};color:${color};font-size:9px;padding:1px 6px;border-radius:3px;font-weight:600">${label}</span>`;
+}
+
+function _renderMarkdown(text) {
+  // Экранируем HTML чтобы не было XSS
+  let s = text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Заголовки ### ## #
+  s = s.replace(/^### (.+)$/gm, '<strong style="font-size:12px;display:block;margin-top:10px;margin-bottom:2px">$1</strong>');
+  s = s.replace(/^## (.+)$/gm,  '<strong style="font-size:12px;display:block;margin-top:10px;margin-bottom:2px">$1</strong>');
+  s = s.replace(/^# (.+)$/gm,   '<strong style="font-size:13px;display:block;margin-top:12px;margin-bottom:4px">$1</strong>');
+
+  // Жирный **text** и __text__
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/__(.+?)__/g,     '<strong>$1</strong>');
+
+  // Курсив *text* и _text_
+  s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  s = s.replace(/_(.+?)_/g,   '<em>$1</em>');
+
+  // `код`
+  s = s.replace(/`(.+?)`/g, '<code style="background:#eee;padding:0 3px;border-radius:2px">$1</code>');
+
+  // Нумерованные списки (1. 2. и т.д.)
+  s = s.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin:2px 0;padding-left:16px">$1. $2</div>');
+
+  // Маркированные списки (* - •)
+  s = s.replace(/^[\*\-•]\s+(.+)$/gm, '<div style="margin:2px 0;padding-left:16px">&ndash;&nbsp;$1</div>');
+
+  // Переносы строк → <br>
+  s = s.replace(/\n{2,}/g, '<br><br>');
+  s = s.replace(/\n/g, '<br>');
+
+  return s;
+}
+
+async function runAIAnalysis() {
+  const deltaId = document.getElementById('ai-delta-sel')?.value;
+  const res     = document.getElementById('ai-result');
+  if (!deltaId) { res.innerHTML = '<div style="color:var(--red);font-size:11px">Выберите дельту</div>'; return; }
+
+  let apiKey = '', hfModel = null, label = '';
+  if (_aiProvider === 'openrouter') {
+    apiKey = document.getElementById('ai-or-key')?.value || '';
+    hfModel = document.getElementById('ai-or-model')?.value || null;
+    label = 'OpenRouter';
+  } else if (_aiProvider === 'modelgate') {
+    apiKey = document.getElementById('ai-mg-key')?.value || '';
+    hfModel = document.getElementById('ai-mg-model')?.value || null;
+    label = 'ModelGate';
+  } else if (_aiProvider === 'groq') {
+    apiKey = document.getElementById('ai-groq-key')?.value || '';
+    hfModel = document.getElementById('ai-groq-model')?.value || null;
+    label = 'Groq';
+  } else if (_aiProvider === 'huggingface') {
+    apiKey = document.getElementById('ai-hf-key')?.value || '';
+    hfModel = document.getElementById('ai-hf-model')?.value || null;
+    label = 'Hugging Face';
+  } else {
+    apiKey = document.getElementById('ai-ant-key')?.value || '';
+    label = 'Anthropic';
+  }
+
+  res.innerHTML = `<div class="loader"><span class="spinner"></span>Анализирую через ${label}…</div>`;
+
+  try {
+    const r = await api('/api/ia/analyze', {method:'POST', body: JSON.stringify({
+      delta_id: deltaId,
+      provider: _aiProvider,
+      api_key:  apiKey || null,
+      hf_model: hfModel || null,
+    })});
+    if (r.error) {
+      res.innerHTML = `<div style="color:var(--red);padding:10px;background:var(--red-l);border-radius:5px;font-size:11px">⚠ ${r.error}</div>`;
+    } else {
+      res.innerHTML = `
+        <div style="padding:12px;background:#f8f9fa;border:1px solid var(--border);border-radius:5px;font-size:11px;line-height:1.8">${_renderMarkdown(r.analysis)}</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          ${_aiProviderBadge(r.provider)}
+          <span>Модель: <code>${r.model}</code></span>
+          ${r.tokens_used ? `<span>Токенов: ${r.tokens_used}</span>` : ''}
+          ${r.tokens_total ? `<span>Всего: ${r.tokens_total}</span>` : ''}
+        </div>`;
+    }
+  } catch(e) {
+    res.innerHTML = `<div style="color:var(--red);font-size:11px;padding:8px;background:var(--red-l);border-radius:4px">${e.message}</div>`;
+  }
+}
+
+async function showAIAnalysis(deltaId) {
+  navigate('ia');
+  setTimeout(() => {
+    const sel = document.getElementById('ai-delta-sel');
+    if(sel) { sel.value = deltaId; }
+  }, 300);
+}
+
+// ─── DELTA MODAL ───
+async function showDeltaModal() {
+  allDocuments = allDocuments.length ? allDocuments : await api('/api/documents');
+  allBranches  = allBranches.length  ? allBranches  : await api('/api/branches');
+
+  const docSel = document.getElementById('d-doc');
+  docSel.innerHTML = '<option value="">— выберите документ —</option>' +
+    allDocuments.map(d => `<option value="${d.id}">${d.id} — ${d.name}</option>`).join('');
+
+  const brSel = document.getElementById('d-branch');
+  brSel.innerHTML = allBranches.filter(b=>!b.is_merged).map(b=>`<option value="${b.name}">${b.name}</option>`).join('');
+
+  document.getElementById('d-field').innerHTML = '<option value="">— выберите документ —</option>';
+  document.getElementById('d-vbefore').value = '';
+  document.getElementById('d-vafter').value = '';
+  document.getElementById('d-author').value = '';
+  document.getElementById('d-reason').value = '';
+  document.getElementById('modal-error').style.display = 'none';
+  document.getElementById('cascade-preview').style.display = 'none';
+  document.getElementById('delta-modal').style.display = 'flex';
+}
+
+async function onDocChange() {
+  const docId = document.getElementById('d-doc')?.value;
+  if(!docId) return;
+  const doc = allDocuments.find(d=>d.id===docId);
+  if(!doc) return;
+  const fields = await api(`/api/documents/${docId}/fields`);
+  const sel = document.getElementById('d-field');
+  sel.innerHTML = '<option value="">— выберите поле —</option>' +
+    (fields.fields||[]).map(f => `<option value="${f.id}" data-deps="${f.dependencies_count}">${f.name} (${f.id})${f.dependencies_count>0?' ['+f.dependencies_count+' зав.]':''}</option>`).join('');
+  document.getElementById('d-vbefore').value = '';
+  document.getElementById('cascade-preview').style.display = 'none';
+}
+
+async function onFieldChange() {
+  const docId = document.getElementById('d-doc')?.value;
+  const fieldId = document.getElementById('d-field')?.value;
+  if(!docId || !fieldId) return;
+
+  // Заполнить v_before
+  const doc = allDocuments.find(d=>d.id===docId);
+  if(doc?.fields_json) {
+    document.getElementById('d-vbefore').value = doc.fields_json[fieldId]||'';
+  }
+
+  // Показать предварительный каскад
+  const omega = document.getElementById('d-omega')?.value||'Ω₂';
+  const docType = doc?.doc_type;
+  if(docType) {
+    const mData = await api(`/api/matrix?source_type=${docType}&omega=${encodeURIComponent(omega)}`);
+    const rules = (mData.rules||[]).filter(r=>r.source_field===fieldId);
+    if(rules.length > 0) {
+      document.getElementById('cascade-preview').style.display = 'block';
+      document.getElementById('cascade-preview-content').innerHTML = rules.map(r=>
+        `<div style="font-size:10px;padding:4px 6px;margin-bottom:3px;border-left:2px solid ${r.dep_type==='1'?'var(--blue)':'var(--amber)'};background:#fafafa;border-radius:0 4px 4px 0">
+          ${dep_badge(r.dep_type)} → <strong>${r.target_type}</strong>.${r.target_field} — ${r.description}
+        </div>`
+      ).join('');
+    }
+  }
+}
+
+async function autoClassify() {
+  const vb    = document.getElementById('d-vbefore')?.value || '';
+  const va    = document.getElementById('d-vafter')?.value  || '';
+  const field = document.getElementById('d-field')?.value   || '';
+  const info  = document.getElementById('classify-inline');
+
+  if (!va) {
+    if (info) { info.style.display = 'block'; info.style.color = 'var(--red)'; info.textContent = 'Сначала введите значение «после»'; }
+    return;
+  }
+
+  if (info) { info.style.display = 'block'; info.style.color = 'var(--text2)'; info.textContent = 'Классифицирую…'; }
+
+  try {
+    const r = await api('/api/ia/classify', {method:'POST', body:JSON.stringify({field_id:field, v_before:vb, v_after:va})});
+    document.getElementById('d-omega').value = r.suggested_omega;
+    onFieldChange();
+    if (info) {
+      const kw = (r.matched_keywords||[]).join(', ') || '—';
+      const conf = r.confidence != null ? r.confidence : 0;
+      const level = r.level || '';
+      info.style.display = 'block';
+      info.style.color = '';
+      const confColor = conf >= 60 ? 'var(--green)' : conf > 0 ? 'var(--orange, #e65100)' : 'var(--text3)';
+      const confNote  = conf === 0 ? ' <span style="color:var(--text3)">(нет ключевых слов — выбран дефолт)</span>' : '';
+      info.innerHTML = `<strong style="color:var(--primary)">${r.suggested_omega}</strong> &nbsp;·&nbsp; уверенность <strong style="color:${confColor}">${conf}%</strong>${confNote}`
+        + (level ? ` &nbsp;·&nbsp; существенность: <em>${level}</em>` : '')
+        + (kw !== '—' ? `<br><span style="color:var(--text3)">Признаки: ${kw}</span>` : '');
+    }
+  } catch(e) {
+    if (info) { info.style.display = 'block'; info.style.color = 'var(--red)'; info.textContent = `Ошибка: ${e.message}`; }
+  }
+}
+
+function closeModal() {
+  document.getElementById('delta-modal').style.display = 'none';
+  const info = document.getElementById('classify-inline');
+  if (info) { info.style.display = 'none'; info.innerHTML = ''; }
+}
+
+async function submitDelta() {
+  const docId   = document.getElementById('d-doc')?.value;
+  const fieldId = document.getElementById('d-field')?.value;
+  const vAfter  = document.getElementById('d-vafter')?.value?.trim();
+  const author  = document.getElementById('d-author')?.value?.trim();
+  const errEl   = document.getElementById('modal-error');
+
+  if(!docId||!fieldId||!vAfter||!author) {
+    errEl.style.display='block';
+    errEl.textContent='Заполните обязательные поля: Документ, Поле, Значение «после», Автор';
+    return;
+  }
+
+  const body = {
+    doc_id: docId,
+    field_id: fieldId,
+    v_before: document.getElementById('d-vbefore')?.value||'',
+    v_after: vAfter,
+    omega_type: document.getElementById('d-omega')?.value||'Ω₂',
+    author,
+    reason: document.getElementById('d-reason')?.value||'',
+    branch: document.getElementById('d-branch')?.value||'main',
+  };
+
+  try {
+    errEl.style.display='none';
+    const delta = await api('/api/deltas', {method:'POST', body:JSON.stringify(body)});
+    closeModal();
+    lastCascadeDeltaId = delta.id;
+    allDocuments = [];  // сбросить кэш
+    navigate('cascade');
+  } catch(e) {
+    errEl.style.display='block';
+    errEl.textContent = e.message;
+  }
+}
+
+function attachHandlers() {}
+
+// ─── СОЗДАНИЕ ДОКУМЕНТА ───
+let _docMode = 'manual'; // 'manual' | 'file'
+
+function switchDocMode(mode) {
+  _docMode = mode;
+  document.getElementById('nd-manual-fields').style.display = mode === 'manual' ? '' : 'none';
+  document.getElementById('nd-file-fields').style.display   = mode === 'file'   ? '' : 'none';
+  document.getElementById('nd-tab-manual').classList.toggle('active', mode === 'manual');
+  document.getElementById('nd-tab-file').classList.toggle('active',   mode === 'file');
+  document.getElementById('nd-submit-btn').textContent = mode === 'file' ? 'Загрузить и создать' : 'Создать';
+  document.getElementById('nd-upload-result').style.display = 'none';
+}
+
+function onDocFileChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('nd-file-preview');
+  document.getElementById('nd-file-name').textContent = file.name;
+  document.getElementById('nd-file-info').textContent =
+    `Размер: ${(file.size/1024).toFixed(1)} КБ · Тип: ${file.type || file.name.split('.').pop().toUpperCase()}`;
+  preview.style.display = 'block';
+
+  // предзаполнить ID из имени файла
+  const idInput = document.getElementById('nd-id');
+  if (!idInput.value) {
+    const stem = file.name.replace(/\.[^.]+$/, '').replace(/[^A-Za-zА-Яа-я0-9-]/g, '-').substring(0, 20).toUpperCase();
+    idInput.value = 'DOC-' + stem;
+  }
+}
+
+async function showCreateDocModal() {
+  document.getElementById('doc-modal-error').style.display = 'none';
+  document.getElementById('nd-upload-result').style.display = 'none';
+  document.getElementById('nd-id').value = '';
+  document.getElementById('nd-name').value = '';
+  document.getElementById('nd-desig').value = '';
+  document.getElementById('nd-ver').value = '1.0';
+  document.getElementById('nd-file-preview').style.display = 'none';
+  const fi = document.getElementById('nd-file');
+  if (fi) fi.value = '';
+  switchDocMode('manual');
+
+  const sel = document.getElementById('nd-type');
+  sel.innerHTML = '<option value="">— загрузка —</option>';
+  try {
+    const types = await api('/api/dsr');
+    sel.innerHTML = types.map(t =>
+      `<option value="${t.code}">${t.std} · ${t.short_code} — ${t.name}</option>`
+    ).join('');
+  } catch(e) {
+    sel.innerHTML = '<option value="">Ошибка загрузки</option>';
+  }
+
+  // drag-and-drop
+  const zone = document.getElementById('nd-drop-zone');
+  if (zone && !zone._dndInit) {
+    zone._dndInit = true;
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.borderColor = 'var(--blue)'; });
+    zone.addEventListener('dragleave', () => { zone.style.borderColor = 'var(--border)'; });
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.style.borderColor = 'var(--border)';
+      const f = e.dataTransfer.files[0];
+      if (f) {
+        const fi = document.getElementById('nd-file');
+        const dt = new DataTransfer();
+        dt.items.add(f);
+        fi.files = dt.files;
+        onDocFileChange(fi);
+        switchDocMode('file');
+      }
+    });
+    zone.addEventListener('click', () => document.getElementById('nd-file').click());
+  }
+
+  document.getElementById('doc-modal').style.display = 'flex';
+}
+
+function closeDocModal() {
+  document.getElementById('doc-modal').style.display = 'none';
+}
+
+// ─── УДАЛЕНИЕ ДОКУМЕНТА ───
+async function deleteDoc(id) {
+  const doc = allDocuments.find(d => d.id === id);
+  const name = doc ? doc.name : id;
+  if (!confirm(`Удалить документ «${name}» (${id})?\n\nБудут удалены все связанные дельты и уведомления.\nДействие необратимо.`)) return;
+  try {
+    await api(`/api/documents/${id}`, {method: 'DELETE'});
+    allDocuments = [];
+    navigate('documents');
+  } catch(e) {
+    alert('Ошибка удаления: ' + e.message);
+  }
+}
+
+// ─── РЕДАКТИРОВАНИЕ ДОКУМЕНТА ───
+let _editDocId = null;
+
+async function showEditDocModal(id) {
+  _editDocId = id;
+  const errEl = document.getElementById('ed-error');
+  errEl.style.display = 'none';
+
+  // Берём из кэша или запрашиваем
+  let doc = allDocuments.find(d => d.id === id);
+  if (!doc) doc = await api(`/api/documents/${id}`);
+
+  document.getElementById('ed-doc-id-title').textContent = id;
+  document.getElementById('ed-type-info').textContent = doc.doc_type + ' · ветка: ' + doc.branch_name;
+  document.getElementById('ed-name').value  = doc.name;
+  document.getElementById('ed-desig').value = doc.designation;
+  document.getElementById('ed-ver').value   = doc.version;
+  document.getElementById('ed-status').value = doc.status;
+  document.getElementById('edit-doc-modal').style.display = 'flex';
+}
+
+function closeEditDocModal() {
+  document.getElementById('edit-doc-modal').style.display = 'none';
+}
+
+async function submitEditDoc() {
+  const errEl = document.getElementById('ed-error');
+  const name  = document.getElementById('ed-name').value.trim();
+  if (!name) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Наименование обязательно';
+    return;
+  }
+  const body = {
+    name,
+    designation: document.getElementById('ed-desig').value.trim() || null,
+    version:     document.getElementById('ed-ver').value.trim()   || null,
+    status:      document.getElementById('ed-status').value       || null,
+  };
+  try {
+    errEl.style.display = 'none';
+    await api(`/api/documents/${_editDocId}`, {method: 'PATCH', body: JSON.stringify(body)});
+    closeEditDocModal();
+    allDocuments = [];
+    navigate('documents');
+  } catch(e) {
+    errEl.style.display = 'block';
+    errEl.textContent = e.message;
+  }
+}
+
+// ─── DIFF ───
+function showDocDiff(id) {
+  const now     = new Date().toISOString().slice(0, 16);
+  const weekAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 16);
+  const doc = allDocuments.find(d => d.id === id);
+  const title = doc ? `${id} — «${doc.name}»` : id;
+
+  const el = document.getElementById('doc-detail');
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">📋 Diff: ${title}</div>
+        <button class="btn btn-sm" onclick="document.getElementById('doc-detail').innerHTML=''">×</button>
+      </div>
+      <div class="panel-body">
+        <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+          Все атомарные изменения документа за выбранный период — аналог <code>git diff HEAD@{t1}..HEAD@{t2}</code>
+        </p>
+        <div class="grid-2" style="margin-bottom:10px">
+          <div>
+            <div class="form-label" style="font-size:11px;margin-bottom:4px">Начало периода</div>
+            <input class="form-input" type="datetime-local" id="diff-t1" value="${weekAgo}"/>
+          </div>
+          <div>
+            <div class="form-label" style="font-size:11px;margin-bottom:4px">Конец периода</div>
+            <input class="form-input" type="datetime-local" id="diff-t2" value="${now}"/>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="runDiff('${id}')">Показать изменения</button>
+      </div>
+      <div id="diff-result" style="overflow-x:auto"></div>
+    </div>`;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+async function runDiff(id) {
+  const t1raw = document.getElementById('diff-t1')?.value;
+  const t2raw = document.getElementById('diff-t2')?.value;
+  const params = new URLSearchParams();
+  if (t1raw) params.append('t1', new Date(t1raw).toISOString());
+  if (t2raw) params.append('t2', new Date(t2raw).toISOString());
+
+  const resEl = document.getElementById('diff-result');
+  resEl.innerHTML = '<div class="loader"><span class="spinner"></span>Загрузка...</div>';
+  try {
+    const deltas = await api(`/api/documents/${id}/diff?${params}`);
+    if (!deltas.length) {
+      resEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px">Изменений в выбранном периоде нет</div>';
+      return;
+    }
+    const rows = deltas.map(d =>
+      `<tr>
+        <td><code>${d.short_sha}</code></td>
+        <td style="white-space:nowrap">${fmt_date(d.committed_at)}</td>
+        <td><code style="font-size:10px">${d.field_id}</code><div style="font-size:10px;color:var(--text2)">${d.field_name}</div></td>
+        <td style="color:var(--red);text-decoration:line-through;max-width:140px;overflow:hidden;text-overflow:ellipsis">${d.v_before||'—'}</td>
+        <td style="color:var(--green);font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis">${d.v_after}</td>
+        <td>${omega_badge(d.omega_type)}</td>
+        <td style="font-size:10px">${d.author}</td>
+        <td style="font-size:10px;color:var(--text2);max-width:120px;overflow:hidden;text-overflow:ellipsis">${d.reason||'—'}</td>
+      </tr>`
+    ).join('');
+    resEl.innerHTML = `
+      <div style="padding:8px 14px;background:#fafafa;border-top:1px solid var(--border);font-size:10px;color:var(--text2)">
+        Найдено дельт: <strong>${deltas.length}</strong>
+      </div>
+      <table class="tbl">
+        <tr><th>SHA</th><th>Время</th><th>Поле</th><th>Было</th><th>Стало</th><th>Ω</th><th>Автор</th><th>Обоснование</th></tr>
+        ${rows}
+      </table>`;
+  } catch(e) {
+    resEl.innerHTML = `<div style="padding:12px;color:var(--red);font-size:11px">Ошибка: ${e.message}</div>`;
+  }
+}
+
+// ─── CHECKOUT ───
+function showDocCheckout(id) {
+  const doc = allDocuments.find(d => d.id === id);
+  const title = doc ? `${id} — «${doc.name}»` : id;
+  const weekAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 16);
+
+  const el = document.getElementById('doc-detail');
+  el.innerHTML = `
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⏮ Checkout: ${title}</div>
+        <button class="btn btn-sm" onclick="document.getElementById('doc-detail').innerHTML=''">×</button>
+      </div>
+      <div class="panel-body">
+        <p style="font-size:11px;color:var(--text2);margin-bottom:10px">
+          Восстановление состояния документа на произвольный момент времени — аналог <code>git checkout HEAD@{timestamp}</code>.
+          Текущие данные в БД <strong>не изменяются</strong>, показывается историческое состояние.
+        </p>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div style="flex:1">
+            <div class="form-label" style="font-size:11px;margin-bottom:4px">Момент времени</div>
+            <input class="form-input" type="datetime-local" id="checkout-ts" value="${weekAgo}"/>
+          </div>
+          <button class="btn btn-primary" onclick="runCheckout('${id}')">Восстановить</button>
+        </div>
+      </div>
+      <div id="checkout-result"></div>
+    </div>`;
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+async function runCheckout(id) {
+  const ts = document.getElementById('checkout-ts')?.value;
+  if (!ts) { alert('Выберите дату и время'); return; }
+  const resEl = document.getElementById('checkout-result');
+  resEl.innerHTML = '<div class="loader"><span class="spinner"></span>Загрузка...</div>';
+  try {
+    const iso = new Date(ts).toISOString();
+    const data = await api(`/api/documents/${id}/checkout?timestamp=${encodeURIComponent(iso)}`);
+
+    const entries = Object.entries(data.fields || {});
+    const rows = entries.length
+      ? entries.map(([k, v]) =>
+          `<tr>
+            <td><code>${k}</code></td>
+            <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis" title="${String(v)}">${String(v)||'—'}</td>
+          </tr>`
+        ).join('')
+      : `<tr><td colspan="2" class="tbl-empty">На указанный момент документ не имел изменений</td></tr>`;
+
+    resEl.innerHTML = `
+      <div style="padding:10px 14px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text2);margin-bottom:10px">
+          Состояние <code>${id}</code> на <strong>${fmt_date(iso)}</strong>
+          · дельт применено: <strong>${data.delta_count}</strong>
+        </div>
+        <table class="tbl">
+          <tr><th>Поле (DSR ID)</th><th>Значение на момент времени</th></tr>
+          ${rows}
+        </table>
+        ${data.delta_count === 0 ? `<div class="gost-box" style="margin-top:10px">На указанный момент времени документ ещё не существовал или не имел зафиксированных дельт.</div>` : ''}
+      </div>`;
+  } catch(e) {
+    resEl.innerHTML = `<div style="padding:12px;color:var(--red);font-size:11px">Ошибка: ${e.message}</div>`;
+  }
+}
+
+// ── Хранилище версий файлов ──────────────────────────────────────────────
+
+async function showDocVersions(id) {
+  const doc = allDocuments.find(d => d.id === id) || {id, name: id};
+  const title = doc.name || id;
+  const panel = document.getElementById('doc-detail');
+  panel.innerHTML = `
+    <div class="panel" id="versions-panel-${id}">
+      <div class="panel-header">
+        <div class="panel-title">📦 Версии файлов: ${title}</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-primary" onclick="generateAndSaveVersion('${id}')">⚙ Сгенерировать DOCX</button>
+          <button class="btn btn-sm" onclick="document.getElementById('doc-detail').innerHTML=''">×</button>
+        </div>
+      </div>
+      <div class="panel-body" id="versions-list-${id}"><div class="loader"><span class="spinner"></span>Загрузка...</div></div>
+    </div>`;
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+
+  try {
+    const data = await api(`/api/documents/${id}/versions`);
+    const versions = data.versions || [];
+    const rows = versions.length
+      ? versions.map(v => `
+        <tr>
+          <td><code>${v.version}</code>${v.version === data.head ? ' <span class="badge" style="background:var(--blue);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px">HEAD</span>' : ''}</td>
+          <td>${v.filename || '—'}</td>
+          <td>${fmt_date(v.committed_at)}</td>
+          <td>${v.author || '—'}</td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${v.reason||''}">${v.reason || '—'}</td>
+          <td>${v.size_bytes ? Math.round(v.size_bytes/1024) + ' кБ' : '—'}</td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-sm" onclick="downloadDocFile('${id}', '${v.version}')">⬇ Скачать</button>
+          </td>
+        </tr>`).join('')
+      : `<tr><td colspan="7" class="tbl-empty">Файлы версий не сохранены. Нажмите «Сгенерировать DOCX».</td></tr>`;
+
+    const listEl = document.getElementById(`versions-list-${id}`);
+    if (!listEl) return;
+    listEl.innerHTML = `
+      <div style="margin-bottom:8px;font-size:11px;color:var(--text2)">
+        HEAD: <code>${data.head || '—'}</code> · Всего версий: <strong>${data.version_count}</strong>
+        ${data.storage_path ? ` · Хранилище: <code style="font-size:10px">${data.storage_path}</code>` : ''}
+      </div>
+      <table class="tbl">
+        <tr><th>Версия</th><th>Файл</th><th>Дата</th><th>Автор</th><th>Причина</th><th>Размер</th><th></th></tr>
+        ${rows}
+      </table>`;
+  } catch(e) {
+    const listEl = document.getElementById(`versions-list-${id}`);
+    if (listEl) listEl.innerHTML = `<div style="padding:12px;color:var(--red)">Ошибка: ${e.message}</div>`;
+  }
+}
+
+function downloadDocFile(id, version) {
+  const url = `/api/documents/${id}/file${version ? '?version=' + encodeURIComponent(version) : ''}`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${id}${version ? '_v' + version : ''}.docx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+async function generateAndSaveVersion(id) {
+  try {
+    const data = await api(`/api/documents/${id}/generate?author=ui`, {method: 'POST'});
+    alert(`DOCX сохранён: версия ${data.version} (${Math.round((data.size_bytes||0)/1024)} кБ)`);
+    showDocVersions(id);
+  } catch(e) {
+    alert('Ошибка генерации: ' + e.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function submitCreateDoc() {
+  const id    = document.getElementById('nd-id')?.value?.trim();
+  const type  = document.getElementById('nd-type')?.value;
+  const errEl = document.getElementById('doc-modal-error');
+
+  if (!id || !type) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Укажите ID документа и тип';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  if (_docMode === 'file') {
+    const fileInput = document.getElementById('nd-file');
+    const file = fileInput?.files[0];
+    if (!file) {
+      errEl.style.display = 'block';
+      errEl.textContent = 'Выберите файл (.pdf или .docx)';
+      return;
+    }
+    const btn = document.getElementById('nd-submit-btn');
+    btn.textContent = 'Загрузка...';
+    btn.disabled = true;
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('doc_id', id);
+      form.append('doc_type', type);
+      form.append('branch_name', 'main');
+      const r = await fetch('/api/documents/upload', {method: 'POST', body: form});
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({detail: r.statusText}));
+        throw new Error(err.detail || r.statusText);
+      }
+      const result = await r.json();
+      const resEl = document.getElementById('nd-upload-result');
+      resEl.style.display = 'block';
+      const filledList = Object.entries(result.filled_fields || {})
+        .map(([k,v]) => `<div style="margin-top:2px"><code style="font-size:9px">${k}</code>: ${String(v).substring(0,80)}</div>`)
+        .join('');
+      resEl.innerHTML = `
+        <strong style="color:#2e7d32">✓ ${result.message}</strong>
+        <div style="margin-top:6px;color:var(--text2)">
+          ${result.pages ? `Страниц: ${result.pages} · ` : ''}
+          Полей DSR заполнено: <strong>${result.dsr_fields_filled}/${result.dsr_fields_total}</strong>
+          ${result.auto_detected_type ? ` · Тип: <code>${result.auto_detected_type}</code>` : ''}
+        </div>
+        ${filledList ? `<div style="margin-top:6px;max-height:130px;overflow-y:auto;font-size:10px;background:#f1f8e9;padding:6px;border-radius:4px">${filledList}</div>` : ''}
+        ${result.parse_warning ? `<div style="color:var(--amber);margin-top:4px;font-size:10px">⚠ ${result.parse_warning}</div>` : ''}`;
+      allDocuments = [];
+      setTimeout(() => { closeDocModal(); navigate('documents'); }, 2800);
+    } catch(e) {
+      errEl.style.display = 'block';
+      errEl.textContent = e.message;
+    } finally {
+      btn.textContent = 'Загрузить и создать';
+      btn.disabled = false;
+    }
+  } else {
+    const name  = document.getElementById('nd-name')?.value?.trim();
+    const desig = document.getElementById('nd-desig')?.value?.trim();
+    const ver   = document.getElementById('nd-ver')?.value?.trim() || '1.0';
+    if (!name || !desig) {
+      errEl.style.display = 'block';
+      errEl.textContent = 'Заполните наименование и обозначение';
+      return;
+    }
+    try {
+      await api('/api/documents', {method:'POST', body: JSON.stringify({
+        id, doc_type: type, name, designation: desig, version: ver, branch_name: 'main'
+      })});
+      closeDocModal();
+      allDocuments = [];
+      navigate('documents');
+    } catch(e) {
+      errEl.style.display = 'block';
+      errEl.textContent = e.message;
+    }
+  }
+}
+
+// ─── ФИЛЬТР ДОКУМЕНТОВ ───
+function filterDocs(std) {
+  // Скрыть панель деталей при смене фильтра
+  const dd = document.getElementById('doc-detail');
+  if (dd) dd.innerHTML = '';
+
+  const map = { 'ЕСКД': 'ESKD', 'ЕСТД': 'ESTD', 'ЕСПД': 'ESPD' };
+  const prefix = map[std];
+  const filtered = std === 'all'
+    ? allDocuments
+    : allDocuments.filter(d => d.doc_type.startsWith(prefix));
+
+  const makeRow = d => {
+    const s = d.doc_type.startsWith('ESKD') ? 'ЕСКД' : d.doc_type.startsWith('ESTD') ? 'ЕСТД' : 'ЕСПД';
+    return `<tr>
+      <td><code>${d.id}</code></td>
+      <td>${std_badge(s)}</td>
+      <td><code>${d.doc_type}</code></td>
+      <td style="font-weight:500">${d.name}</td>
+      <td><code>v${d.version}</code></td>
+      <td>${d.designation}</td>
+      <td>${status_badge(d.status)}</td>
+      <td>${fmt_date(d.updated_at)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm" onclick="showDocFields('${d.id}')">Поля</button>
+        <button class="btn btn-sm" onclick="showDocHistory('${d.id}')">История</button>
+        <button class="btn btn-sm" onclick="showDocDiff('${d.id}')">Diff</button>
+        <button class="btn btn-sm" onclick="showDocCheckout('${d.id}')">Checkout</button>
+        <button class="btn btn-sm" onclick="showDocVersions('${d.id}')">📦 Версии</button>
+        <button class="btn btn-sm" onclick="downloadDocFile('${d.id}')">⬇ DOCX</button>
+        <button class="btn btn-sm" onclick="showEditDocModal('${d.id}')" title="Редактировать">✏</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDoc('${d.id}')" title="Удалить">🗑</button>
+      </td></tr>`;
+  };
+
+  const emptyMsg = std === 'all'
+    ? 'Документов нет'
+    : `Нет документов стандарта ${std}`;
+
+  const rows = filtered.map(makeRow).join('') ||
+    `<tr><td colspan="9" class="tbl-empty">${emptyMsg}</td></tr>`;
+
+  // перерисовать строки таблицы
+  const tbl = document.querySelector('#content .panel .tbl');
+  if (tbl) {
+    const header = tbl.querySelector('tr:first-child');
+    tbl.innerHTML = '';
+    if (header) tbl.appendChild(header);
+    tbl.insertAdjacentHTML('beforeend', rows);
+  }
+
+  // подсветить активную вкладку
+  const tabs = document.querySelectorAll('.tab-strip .tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  tabs.forEach(t => {
+    const label = t.textContent.trim();
+    if (std === 'all' && label.startsWith('Все')) t.classList.add('active');
+    else if (std !== 'all' && label === std) t.classList.add('active');
+  });
+}
+
+// ─── ВЕТКИ: прокрутить к форме создания ───
+function showCreateBranchModal() {
+  const input = document.getElementById('br-name');
+  if (input) {
+    input.scrollIntoView({behavior:'smooth', block:'center'});
+    input.focus();
+  }
+}
+
+// Старт
+render();
+</script>
+</body>
+</html>
